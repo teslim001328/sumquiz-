@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sumquiz/models/quiz_question.dart';
+import 'quiz_question.dart';
 import 'package:uuid/uuid.dart';
 
 class Quiz {

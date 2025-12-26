@@ -7,7 +7,7 @@ import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
-import 'package:sumquiz/models/summary_model.dart' as model_summary;
+import '../models/summary_model.dart' as model_summary;
 
 import '../models/flashcard.dart';
 import '../models/quiz_model.dart';
@@ -18,8 +18,8 @@ import '../models/local_quiz_question.dart';
 import '../models/local_flashcard_set.dart';
 import '../models/local_flashcard.dart';
 import '../models/folder.dart';
-import 'package:sumquiz/services/local_database_service.dart';
-import 'package:sumquiz/services/iap_service.dart';
+import '../services/local_database_service.dart';
+import '../services/iap_service.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:developer' as developer;
 
@@ -140,9 +140,9 @@ class AIService {
       {Uint8List? pdfBytes, String? userId}) async {
     // Check usage limits for FREE tier users
     if (_iapService != null && userId != null) {
-      final isPro = await _iapService!.hasProAccess();
+      final isPro = await _iapService.hasProAccess();
       if (!isPro) {
-        final isLimitReached = await _iapService!.isUploadLimitReached(userId);
+        final isLimitReached = await _iapService.isUploadLimitReached(userId);
         if (isLimitReached) {
           throw AIServiceException(
               'Weekly upload limit reached. Upgrade to Pro for unlimited access.');
@@ -187,7 +187,7 @@ class AIService {
 
       // Update usage count for FREE tier users
       if (_iapService != null && userId != null) {
-        final isPro = await _iapService!.hasProAccess();
+        final isPro = await _iapService.hasProAccess();
         if (!isPro) {
           await _incrementWeeklyUploads(userId);
         }
@@ -335,9 +335,9 @@ class AIService {
       {String? userId}) async {
     // Check usage limits for FREE tier users
     if (_iapService != null && userId != null) {
-      final isPro = await _iapService!.hasProAccess();
+      final isPro = await _iapService.hasProAccess();
       if (!isPro) {
-        final isLimitReached = await _iapService!.isUploadLimitReached(userId);
+        final isLimitReached = await _iapService.isUploadLimitReached(userId);
         if (isLimitReached) {
           throw AIServiceException(
               'Weekly upload limit reached. Upgrade to Pro for unlimited access.');
@@ -355,7 +355,7 @@ class AIService {
 
       // Update usage count for FREE tier users
       if (_iapService != null && userId != null) {
-        final isPro = await _iapService!.hasProAccess();
+        final isPro = await _iapService.hasProAccess();
         if (!isPro) {
           await _incrementWeeklyUploads(userId);
         }
@@ -374,9 +374,9 @@ class AIService {
       {String? userId}) async {
     // Check usage limits for FREE tier users
     if (_iapService != null && userId != null) {
-      final isPro = await _iapService!.hasProAccess();
+      final isPro = await _iapService.hasProAccess();
       if (!isPro) {
-        final isLimitReached = await _iapService!.isUploadLimitReached(userId);
+        final isLimitReached = await _iapService.isUploadLimitReached(userId);
         if (isLimitReached) {
           throw AIServiceException(
               'Weekly upload limit reached. Upgrade to Pro for unlimited access.');
@@ -400,7 +400,7 @@ class AIService {
 
       // Update usage count for FREE tier users
       if (_iapService != null && userId != null) {
-        final isPro = await _iapService!.hasProAccess();
+        final isPro = await _iapService.hasProAccess();
         if (!isPro) {
           await _incrementWeeklyUploads(userId);
         }
@@ -424,11 +424,11 @@ class AIService {
   }) async {
     // Check usage limits for FREE tier users
     if (_iapService != null) {
-      final isPro = await _iapService!.hasProAccess();
+      final isPro = await _iapService.hasProAccess();
       if (!isPro) {
         // Check upload limit
         final isUploadLimitReached =
-            await _iapService!.isUploadLimitReached(userId);
+            await _iapService.isUploadLimitReached(userId);
         if (isUploadLimitReached) {
           throw AIServiceException(
               'Weekly upload limit reached. Upgrade to Pro for unlimited access.');
@@ -436,7 +436,7 @@ class AIService {
 
         // Check folder limit
         final isFolderLimitReached =
-            await _iapService!.isFolderLimitReached(userId);
+            await _iapService.isFolderLimitReached(userId);
         if (isFolderLimitReached) {
           throw AIServiceException(
               'Folder limit reached. Upgrade to Pro for unlimited folders.');
@@ -552,7 +552,7 @@ class AIService {
 
     // Update usage count for FREE tier users
     if (_iapService != null) {
-      final isPro = await _iapService!.hasProAccess();
+      final isPro = await _iapService.hasProAccess();
       if (!isPro) {
         await _incrementWeeklyUploads(userId);
       }

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sumquiz/models/summary_model.dart';
-import 'package:sumquiz/models/quiz_model.dart';
-import 'package:sumquiz/models/flashcard_set.dart';
+import '../../models/summary_model.dart';
+import '../../models/quiz_model.dart';
+import '../../models/flashcard_set.dart';
 
 enum LibraryItemType { summary, quiz, flashcards }
 

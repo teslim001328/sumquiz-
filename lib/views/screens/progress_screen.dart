@@ -1,19 +1,13 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 
 import '../../models/user_model.dart';
 import '../../services/local_database_service.dart';
 import '../../services/spaced_repetition_service.dart';
 import '../../services/firestore_service.dart';
-import '../../services/progress_service.dart';
-import '../../widgets/personalized_insights.dart';
-import '../../widgets/activity_chart.dart';
-import '../../widgets/achievements_tracker.dart';
-import '../../widgets/daily_goal_tracker.dart';
-import '../../widgets/goal_setting_dialog.dart';
-import '../../services/user_service.dart';
-import '../../widgets/pro_gate.dart';
 
 class ProgressScreen extends StatefulWidget {
   const ProgressScreen({super.key});
@@ -41,37 +35,25 @@ class _ProgressScreenState extends State<ProgressScreen> {
       final srsService =
           SpacedRepetitionService(dbService.getSpacedRepetitionBox());
       final firestoreService = FirestoreService();
-      final progressService = ProgressService();
 
       // Fetch all data in parallel
       final srsStatsFuture = srsService.getStatistics(userId);
       final firestoreStatsFuture =
           firestoreService.streamAllItems(userId).first;
-      final accuracyFuture = progressService.getAverageAccuracy(userId);
-      final timeSpentFuture = progressService.getTotalTimeSpent(userId);
 
-      final results = await Future.wait([
-        srsStatsFuture,
-        firestoreStatsFuture,
-        accuracyFuture,
-        timeSpentFuture
-      ]);
+      final results = await Future.wait([srsStatsFuture, firestoreStatsFuture]);
       final srsStats = results[0];
       final firestoreStats = results[1] as Map<String, List<dynamic>>;
-      final averageAccuracy = results[2] as double;
-      final totalTimeSpent = results[3] as int;
 
       final summariesCount = firestoreStats['summaries']?.length ?? 0;
       final quizzesCount = firestoreStats['quizzes']?.length ?? 0;
       final flashcardsCount = firestoreStats['flashcards']?.length ?? 0;
 
-      final Map<String, dynamic> result = {
-        ...srsStats as Map<String, dynamic>,
+      final result = {
+        ...srsStats,
         'summariesCount': summariesCount,
         'quizzesCount': quizzesCount,
         'flashcardsCount': flashcardsCount,
-        'averageAccuracy': averageAccuracy,
-        'totalTimeSpent': totalTimeSpent,
       };
       developer.log('Stats loaded successfully: $result',
           name: 'ProgressScreen');
@@ -141,68 +123,16 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   children: [
                     _buildMissionEngineHero(user, theme),
                     const SizedBox(height: 32),
-                    DailyGoalTracker(
-                      itemsCompleted: user.itemsCompletedToday,
-                      dailyGoal: user.dailyGoal,
-                      onSetGoal: () async {
-                        final userService =
-                            Provider.of<UserService>(context, listen: false);
-                        final newGoal = await showDialog<int>(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return GoalSettingDialog(
-                                currentGoal: user.dailyGoal);
-                          },
-                        );
-
-                        if (newGoal != null && newGoal > 0) {
-                          try {
-                            await userService.updateDailyGoal(
-                                user.uid, newGoal);
-                            // Refresh the data
-                            setState(() {
-                              _statsFuture = _loadStats(user.uid);
-                            });
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text('Failed to update goal: $e')),
-                            );
-                          }
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 32),
                     _buildTopMetrics(stats, theme),
                     const SizedBox(height: 32),
                     _buildReviewBanner(
                         stats['dueForReviewCount'] as int? ?? 0, theme),
                     const SizedBox(height: 32),
-                    ActivityChart(
-                      activityData: stats['upcomingReviews']
-                              as List<MapEntry<DateTime, int>>? ??
-                          [],
-                      title: 'Weekly Activity',
-                    ),
-                    const SizedBox(height: 32),
-                    AchievementsTracker(
-                      streakDays: user.missionCompletionStreak,
-                      totalItemsCompleted: stats['summariesCount'] as int? ??
-                          0 + stats['quizzesCount'] as int? ??
-                          0 + stats['flashcardsCount'] as int? ??
-                          0,
-                      quizzesTaken: stats['quizzesCount'] as int? ?? 0,
-                      flashcardsReviewed: stats['flashcardsCount'] as int? ?? 0,
-                    ),
-                    const SizedBox(height: 32),
-                    PersonalizedInsights(
-                      averageAccuracy:
-                          stats['averageAccuracy'] as double? ?? 0.0,
-                      totalTimeSpent: stats['totalTimeSpent'] as int? ?? 0,
-                      streakDays: user.missionCompletionStreak,
-                      itemsCompletedToday: user.itemsCompletedToday,
-                      dailyGoal: user.dailyGoal,
-                    ),
+                    _buildUpcomingReviews(
+                        stats['upcomingReviews']
+                                as List<MapEntry<DateTime, int>>? ??
+                            [],
+                        theme),
                   ],
                 ),
               ),
@@ -251,8 +181,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            theme.colorScheme.primary.withValues(alpha: 0.1),
-            theme.colorScheme.secondary.withValues(alpha: 0.05),
+            theme.colorScheme.primary.withOpacity(0.1),
+            theme.colorScheme.secondary.withOpacity(0.05),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -287,7 +217,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   'Decays 5% daily',
                   style: theme.textTheme.bodySmall?.copyWith(
                       color:
-                          theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7)
+                          theme.textTheme.bodySmall?.color?.withOpacity(0.7)),
                 ),
               ],
             ),
@@ -318,7 +248,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   user.missionCompletionStreak == 1 ? 'day' : 'days',
                   style: theme.textTheme.bodySmall?.copyWith(
                       color:
-                          theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7)
+                          theme.textTheme.bodySmall?.color?.withOpacity(0.7)),
                 ),
               ],
             ),
@@ -351,29 +281,12 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   (stats['flashcardsCount'] ?? 0).toString()),
             ),
           ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _buildMetricChip(theme, 'Avg. Accuracy',
-                  '${(stats['averageAccuracy'] ?? 0).toStringAsFixed(1)}%',
-                  icon: Icons.check_circle_outline),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildMetricChip(theme, 'Time Spent',
-                  _formatTimeSpent(stats['totalTimeSpent'] ?? 0),
-                  icon: Icons.access_time),
-            ),
-          ],
         )
       ],
     );
   }
 
-  Widget _buildMetricChip(ThemeData theme, String label, String value,
-      {IconData? icon}) {
+  Widget _buildMetricChip(ThemeData theme, String label, String value) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
       decoration: BoxDecoration(
@@ -383,10 +296,6 @@ class _ProgressScreenState extends State<ProgressScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (icon != null) ...[
-            Icon(icon, color: theme.colorScheme.primary),
-            const SizedBox(height: 8),
-          ],
           Text(value,
               style: theme.textTheme.displaySmall?.copyWith(
                   color: theme.colorScheme.primary,
@@ -396,19 +305,6 @@ class _ProgressScreenState extends State<ProgressScreen> {
         ],
       ),
     );
-  }
-
-  String _formatTimeSpent(int seconds) {
-    if (seconds < 60) {
-      return '${seconds}s';
-    } else if (seconds < 3600) {
-      final minutes = (seconds / 60).floor();
-      return '${minutes}m';
-    } else {
-      final hours = (seconds / 3600).floor();
-      final minutes = ((seconds % 3600) / 60).floor();
-      return '${hours}h ${minutes}m';
-    }
   }
 
   Widget _buildReviewBanner(int dueCount, ThemeData theme) {
@@ -455,6 +351,110 @@ class _ProgressScreenState extends State<ProgressScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildUpcomingReviews(
+      List<MapEntry<DateTime, int>> upcomingReviews, ThemeData theme) {
+    final weeklyData = _prepareWeeklyData(upcomingReviews);
+    final totalUpcoming =
+        upcomingReviews.fold<int>(0, (sum, item) => sum + item.value);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Upcoming Reviews', style: theme.textTheme.headlineMedium),
+        const SizedBox(height: 16),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Text(totalUpcoming.toString(),
+                style: theme.textTheme.displayMedium?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.bold)),
+            const SizedBox(width: 8),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: Text('reviews in the next 7 days',
+                  style: theme.textTheme.titleMedium),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        SizedBox(
+          height: 180,
+          child: BarChart(
+            BarChartData(
+              alignment: BarChartAlignment.spaceAround,
+              barGroups: weeklyData.map((data) {
+                final day = data.key;
+                final count = data.value;
+                return BarChartGroupData(
+                  x: day,
+                  barRods: [
+                    BarChartRodData(
+                      toY: count.toDouble(),
+                      color: theme.colorScheme.secondary,
+                      width: 22,
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(6)),
+                    ),
+                  ],
+                );
+              }).toList(),
+              titlesData: FlTitlesData(
+                leftTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, meta) {
+                      final now = DateTime.now();
+                      final day = now.add(Duration(days: value.toInt()));
+                      return Text(DateFormat.E().format(day),
+                          style: theme.textTheme.bodySmall);
+                    },
+                    reservedSize: 30,
+                  ),
+                ),
+              ),
+              gridData: const FlGridData(show: false),
+              borderData: FlBorderData(
+                show: true,
+                border: Border(
+                  bottom: BorderSide(
+                      color: theme.textTheme.bodySmall!.color!, width: 1),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<MapEntry<int, int>> _prepareWeeklyData(
+      List<MapEntry<DateTime, int>> upcomingReviews) {
+    final weeklyMap = {for (var i = 0; i < 7; i++) i: 0};
+    final today = DateTime.now();
+    final startOfToday = DateTime(today.year, today.month, today.day);
+
+    for (var review in upcomingReviews) {
+      final reviewDate = review.key;
+      final startOfReviewDay =
+          DateTime(reviewDate.year, reviewDate.month, reviewDate.day);
+      final dayIndex = startOfReviewDay.difference(startOfToday).inDays;
+
+      if (dayIndex >= 0 && dayIndex < 7) {
+        weeklyMap.update(dayIndex, (value) => value + review.value,
+            ifAbsent: () => review.value);
+      }
+    }
+    return weeklyMap.entries.toList();
   }
 
   Widget _buildEmptyState(String userId, ThemeData theme) {

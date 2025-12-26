@@ -27,10 +27,8 @@ class _ReferralScreenState extends State<ReferralScreen> {
     // Fetch the referral code when the screen initializes.
     // This is a one-time fetch, ideal for data that doesn't change during the screen's lifecycle.
     final authService = Provider.of<AuthService>(context, listen: false);
-    final referralService =
-        Provider.of<ReferralService>(context, listen: false);
-    _referralCodeFuture =
-        referralService.generateReferralCode(authService.currentUser!.uid);
+    final referralService = Provider.of<ReferralService>(context, listen: false);
+    _referralCodeFuture = referralService.generateReferralCode(authService.currentUser!.uid);
   }
 
   @override
@@ -61,28 +59,26 @@ class _ReferralScreenState extends State<ReferralScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Share your unique code with friends. When they sign up, they get 7 free Pro days, and you earn rewards after just 2 referrals!',
-              style: theme.textTheme.bodyLarge
-                  ?.copyWith(color: theme.textTheme.bodySmall?.color),
+              'Share your unique code with friends. When they sign up, they get 3 free Pro days, and you earn rewards after just 3 referrals!',
+              style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: 32),
 
             // --- Referral Code Card ---
             _buildReferralCodeCard(theme, _referralCodeFuture),
-
+            
             const SizedBox(height: 40),
 
             // --- Stats Section ---
             Text(
               'Your Progress',
-              style: theme.textTheme.titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _buildStatsGrid(theme, referralService, uid),
 
             const SizedBox(height: 40),
-
+            
             // --- How It Works Section ---
             _buildHowItWorks(theme),
           ],
@@ -100,7 +96,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow.withValues(alpha: 0.1),
+            color: theme.colorScheme.shadow.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           )
@@ -110,8 +106,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
         children: [
           Text(
             'YOUR UNIQUE CODE',
-            style: theme.textTheme.labelMedium
-                ?.copyWith(color: theme.colorScheme.onPrimaryContainer),
+            style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onPrimaryContainer),
           ),
           const SizedBox(height: 16),
           FutureBuilder<String>(
@@ -120,9 +115,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               }
-              if (snapshot.hasError ||
-                  !snapshot.hasData ||
-                  snapshot.data!.isEmpty) {
+              if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
                 return const Text('Could not load code');
               }
               final code = snapshot.data!;
@@ -130,16 +123,14 @@ class _ReferralScreenState extends State<ReferralScreen> {
                 onTap: () {
                   Clipboard.setData(ClipboardData(text: code));
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Referral code copied to clipboard!')),
+                    const SnackBar(content: Text('Referral code copied to clipboard!')),
                   );
                 },
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surface.withValues(alpha: 0.8),
+                    color: theme.colorScheme.surface.withOpacity(0.8),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -172,14 +163,14 @@ class _ReferralScreenState extends State<ReferralScreen> {
               backgroundColor: theme.colorScheme.primary,
               foregroundColor: theme.colorScheme.onPrimary,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
             onPressed: () async {
               final code = await _referralCodeFuture;
               Share.share(
-                  'Join me on SumQuiz and get 7 free Pro days! Use my code: $code\n\nDownload the app here: [App Store Link]',
-                  subject: 'Get Free Pro Days on SumQuiz!');
+                'Join me on SumQuiz and get 3 free Pro days! Use my code: $code\n\nDownload the app here: [App Store Link]', 
+                subject: 'Get Free Pro Days on SumQuiz!'
+              );
             },
           ),
         ],
@@ -188,8 +179,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
   }
 
   /// Builds the grid displaying real-time referral statistics.
-  Widget _buildStatsGrid(
-      ThemeData theme, ReferralService referralService, String uid) {
+  Widget _buildStatsGrid(ThemeData theme, ReferralService referralService, String uid) {
     return GridView.count(
       crossAxisCount: 3,
       shrinkWrap: true,
@@ -197,29 +187,19 @@ class _ReferralScreenState extends State<ReferralScreen> {
       crossAxisSpacing: 16,
       mainAxisSpacing: 16,
       children: [
-        _buildStatCard(theme, 'Pending', referralService.getReferralCount(uid),
-            Icons.people_outline_rounded),
-        _buildStatCard(
-            theme,
-            'Total Friends',
-            referralService.getTotalReferralCount(uid),
-            Icons.group_add_rounded),
-        _buildStatCard(
-            theme,
-            'Rewards Earned',
-            referralService.getReferralRewards(uid),
-            Icons.card_giftcard_rounded),
+        _buildStatCard(theme, 'Pending', referralService.getReferralCount(uid), Icons.people_outline_rounded),
+        _buildStatCard(theme, 'Total Friends', referralService.getTotalReferralCount(uid), Icons.group_add_rounded),
+        _buildStatCard(theme, 'Rewards Earned', referralService.getReferralRewards(uid), Icons.card_giftcard_rounded),
       ],
     );
   }
 
   /// Builds a single card for a statistic.
-  Widget _buildStatCard(
-      ThemeData theme, String label, Stream<int> stream, IconData icon) {
+  Widget _buildStatCard(ThemeData theme, String label, Stream<int> stream, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -233,8 +213,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
               final value = snapshot.data ?? 0;
               return Text(
                 value.toString(),
-                style: theme.textTheme.headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
               );
             },
           ),
@@ -242,8 +221,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
           ),
         ],
       ),
@@ -257,23 +235,18 @@ class _ReferralScreenState extends State<ReferralScreen> {
       children: [
         Text(
           'How It Works',
-          style:
-              theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
-        _buildStep(theme, Icons.one_k, 'Share Your Code',
-            'Send your unique code to friends via text, email, or social media.'),
-        _buildStep(theme, Icons.two_k, 'Friend Signs Up',
-            'Your friend enters your code during signup and instantly receives 7 Pro days.'),
-        _buildStep(theme, Icons.three_k, 'You Get Rewarded',
-            'After 2 friends sign up, you earn a reward: 7 extra days of Pro subscription!'),
+        _buildStep(theme, Icons.one_k, 'Share Your Code', 'Send your unique code to friends via text, email, or social media.'),
+        _buildStep(theme, Icons.two_k, 'Friend Signs Up', 'Your friend enters your code during signup and instantly receives 3 Pro days.'),
+        _buildStep(theme, Icons.three_k, 'You Get Rewarded', 'After 3 friends sign up, you earn a reward: 7 extra days of Pro subscription!'),
       ],
     );
   }
 
   /// Builds a single step in the 'How It Works' section.
-  Widget _buildStep(
-      ThemeData theme, IconData icon, String title, String description) {
+  Widget _buildStep(ThemeData theme, IconData icon, String title, String description) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
@@ -285,13 +258,9 @@ class _ReferralScreenState extends State<ReferralScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
-                    style: theme.textTheme.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.bold)),
+                Text(title, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text(description,
-                    style: theme.textTheme.bodyMedium
-                        ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                Text(description, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
               ],
             ),
           ),

@@ -20,29 +20,6 @@ class ProgressService {
     }
   }
 
-  /// Check if user has Pro access
-  Future<bool> isUserPro(String userId) async {
-    try {
-      final doc = await _db.collection('users').doc(userId).get();
-      if (!doc.exists) return false;
-
-      final data = doc.data();
-      if (data == null) return false;
-
-      // Check for 'subscriptionExpiry' field
-      if (data.containsKey('subscriptionExpiry')) {
-        // Lifetime access is handled by a null expiry date
-        if (data['subscriptionExpiry'] == null) return true;
-
-        final expiryDate = (data['subscriptionExpiry'] as Timestamp).toDate();
-        return expiryDate.isAfter(DateTime.now());
-      }
-      return false;
-    } catch (e) {
-      return false;
-    }
-  }
-
   Future<int> getQuizzesCount(String userId) async {
     try {
       final snapshot =
@@ -66,54 +43,6 @@ class ProgressService {
     } catch (e) {
       // Log error and return 0 as fallback
       debugPrint('Error getting flashcards count: $e');
-      return 0;
-    }
-  }
-
-  Future<double> getAverageAccuracy(String userId) async {
-    try {
-      // Get all quizzes for the user
-      final quizzesSnapshot =
-          await _db.collection('users').doc(userId).collection('quizzes').get();
-
-      if (quizzesSnapshot.docs.isEmpty) return 0.0;
-
-      double totalAccuracy = 0.0;
-      int quizCount = 0;
-
-      for (var doc in quizzesSnapshot.docs) {
-        final data = doc.data();
-        if (data.containsKey('accuracy') && data['accuracy'] != null) {
-          totalAccuracy += (data['accuracy'] as num).toDouble();
-          quizCount++;
-        }
-      }
-
-      return quizCount > 0 ? totalAccuracy / quizCount : 0.0;
-    } catch (e) {
-      debugPrint('Error getting average accuracy: $e');
-      return 0.0;
-    }
-  }
-
-  Future<int> getTotalTimeSpent(String userId) async {
-    try {
-      // Get all quizzes for the user
-      final quizzesSnapshot =
-          await _db.collection('users').doc(userId).collection('quizzes').get();
-
-      int totalTime = 0;
-
-      for (var doc in quizzesSnapshot.docs) {
-        final data = doc.data();
-        if (data.containsKey('time_spent') && data['time_spent'] != null) {
-          totalTime += (data['time_spent'] as num).toInt();
-        }
-      }
-
-      return totalTime;
-    } catch (e) {
-      debugPrint('Error getting total time spent: $e');
       return 0;
     }
   }

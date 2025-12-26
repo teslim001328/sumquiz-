@@ -88,25 +88,17 @@ class SubscriptionScreen extends StatelessWidget {
           Text(
             'Get unlimited access to all features',
             style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.textTheme.bodySmall?.color,
+              color: theme.hintColor,
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 48),
 
           // Feature list
-          _buildFeatureItem(theme,
-              'Unlimited content generation (summaries, quizzes, flashcards)'),
-          _buildFeatureItem(theme, 'Unlimited folders and AI tagging'),
-          _buildFeatureItem(
-              theme, 'Full Spaced Repetition System (unlimited cards)'),
-          _buildFeatureItem(
-              theme, 'Progress analytics with charts and exports (PDF/Word)'),
-          _buildFeatureItem(theme, 'Daily missions with full rewards'),
-          _buildFeatureItem(theme, 'AI Quiz and Flashcards unlimited'),
-          _buildFeatureItem(
-              theme, 'Gamification rewards (momentum, streaks, badges)'),
-          _buildFeatureItem(theme, 'Edit content functionality'),
+          _buildFeatureItem(theme, 'Unlimited quizzes & flashcards'),
+          _buildFeatureItem(theme, 'AI-powered question generation'),
+          _buildFeatureItem(theme, 'Advanced progress tracking'),
+          _buildFeatureItem(theme, 'Ad-free experience'),
 
           const SizedBox(height: 48),
 
@@ -172,38 +164,11 @@ class SubscriptionScreen extends StatelessWidget {
           Text(
             'Enjoy unlimited access to all features',
             style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.textTheme.bodySmall?.color,
+              color: theme.hintColor,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 32),
-
-          // Benefits reminder
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Pro Benefits',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildFeatureItem(theme, 'Unlimited content generation'),
-                  _buildFeatureItem(theme, 'Unlimited folders'),
-                  _buildFeatureItem(theme, 'Full Spaced Repetition System'),
-                  _buildFeatureItem(theme, 'Progress analytics with exports'),
-                  _buildFeatureItem(theme, 'Daily missions with full rewards'),
-                  _buildFeatureItem(theme, 'All gamification rewards'),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 32),
+          const SizedBox(height: 48),
 
           // Show subscription details
           FutureBuilder<List<ProductDetails>?>(

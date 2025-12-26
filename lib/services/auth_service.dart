@@ -2,19 +2,22 @@ import 'dart:developer' as developer;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sumquiz/models/user_model.dart';
-import 'package:sumquiz/services/firestore_service.dart';
-import 'package:sumquiz/services/referral_service.dart';
-import 'package:sumquiz/services/user_service.dart';
+import '../models/user_model.dart';
+import '../services/firestore_service.dart';
+import '../services/referral_service.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   final FirebaseAuth _auth;
-  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: [
+      'email',
+      'profile',
+    ],
+  );
   final FirestoreService _firestoreService = FirestoreService();
   final ReferralService _referralService = ReferralService();
-  final UserService _userService = UserService();
   static const String _authTokenKey = 'auth_token';
   static const String _userIdKey = 'user_id';
   static const String _userDisplayNameKey = 'user_display_name';
@@ -99,9 +102,7 @@ class AuthService {
       await _googleSignIn.disconnect();
 
       // Trigger the authentication flow
-      final GoogleSignInAccount googleUser =
-          await _googleSignIn.attemptLightweightAuthentication() ??
-              await _googleSignIn.authenticate();
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       developer.log('Google Sign-In response received');
 
@@ -114,12 +115,14 @@ class AuthService {
       developer.log('Google user authenticated: ${googleUser.email}');
 
       // Obtain the auth details
-      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       developer.log('Google authentication obtained');
 
       // Create a new credential
       final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
@@ -133,9 +136,6 @@ class AuthService {
 
         // Save authentication state for offline access
         await _saveAuthState(user);
-
-        // Check and reset weekly uploads if needed
-        await _userService.checkAndResetWeeklyUploads(user.uid);
 
         final isNewUser = result.additionalUserInfo?.isNewUser ?? false;
         if (isNewUser) {

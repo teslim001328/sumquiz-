@@ -39,7 +39,7 @@ class QuizViewModel extends ChangeNotifier {
           .collection('quizzes')
           .where('userId', isEqualTo: _userId)
           .get();
-      
+
       _quizzes = snapshot.docs.map((doc) {
         final data = doc.data();
         return LocalQuiz(
@@ -48,10 +48,10 @@ class QuizViewModel extends ChangeNotifier {
           scores: List<double>.from(data['scores'] ?? []),
           questions: const [], // Questions are not stored in Firestore for this view model
           userId: data['userId'] ?? '',
-          timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+          timestamp:
+              (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
         );
       }).toList();
-
     } catch (e) {
       debugPrint('Error loading quizzes from Firestore: $e');
     } finally {
@@ -60,21 +60,25 @@ class QuizViewModel extends ChangeNotifier {
     }
   }
 
-
   double get averageScore {
     if (_quizzes.isEmpty) return 0.0;
     final allScores = _quizzes.expand((quiz) => quiz.scores).toList();
     if (allScores.isEmpty) return 0.0;
-    return allScores.reduce((value, element) => value + element) / allScores.length;
+    return allScores.reduce((value, element) => value + element) /
+        allScores.length;
   }
 
   int get totalQuizzesTaken {
-    return _quizzes.fold(0, (previousValue, element) => previousValue + element.scores.length);
+    return _quizzes.fold(
+        0, (previousValue, element) => previousValue + element.scores.length);
   }
 
   int get totalPerfectScores {
     return _quizzes.fold(0, (previousValue, element) {
-      return previousValue + element.scores.where((score) => score == element.questions.length).length;
+      return previousValue +
+          element.scores
+              .where((score) => score == element.questions.length)
+              .length;
     });
   }
 }

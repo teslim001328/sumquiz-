@@ -9,6 +9,7 @@ import '../../services/spaced_repetition_service.dart';
 import '../../models/local_flashcard.dart';
 import '../../models/spaced_repetition.dart';
 import 'package:flip_card/flip_card.dart';
+import '../../utils/app_colors.dart';
 
 class SpacedRepetitionScreen extends StatefulWidget {
   const SpacedRepetitionScreen({super.key});
@@ -168,11 +169,11 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
               blastDirectionality: BlastDirectionality.explosive,
               shouldLoop: false,
               colors: const [
-                Colors.green,
-                Colors.blue,
-                Colors.pink,
-                Colors.orange,
-                Colors.purple
+                Color(0xFF0D9488), // teal
+                Color(0xFF1E3A8A), // deep blue
+                Color(0xFFF59E0B), // soft orange
+                Color(0xFF8E44AD), // purple
+                Color(0xFF1ABC9C), // turquoise
               ],
             ),
           ),
@@ -331,12 +332,12 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
         Row(
           children: [
             Expanded(
-                child: _buildFeedbackButton('No', Icons.close,
-                    Colors.red.shade400, () => _processReview(false))),
+                child: _buildFeedbackButton('No', Icons.close, AppColors.error,
+                    () => _processReview(false))),
             const SizedBox(width: 16),
             Expanded(
                 child: _buildFeedbackButton('Yes', Icons.check,
-                    Colors.green.shade400, () => _processReview(true))),
+                    AppColors.secondary, () => _processReview(true))),
           ],
         ),
       ],

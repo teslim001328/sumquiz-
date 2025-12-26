@@ -13,8 +13,7 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   bool _isLoading = true;
 
   @override
@@ -60,18 +59,17 @@ class _SplashScreenState extends State<SplashScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
-              Theme.of(context).colorScheme.secondary.withValues(alpha: 0.8),
+              Theme.of(context).colorScheme.primary.withOpacity(0.8),
+              Theme.of(context).colorScheme.secondary.withOpacity(0.8),
             ],
           ),
         ),
         child: Center(
           child: _isLoading
               ? Shimmer.fromColors(
-                  baseColor: Colors.white.withValues(alpha: 0.5),
+                  baseColor: Colors.white.withOpacity(0.5),
                   highlightColor: Colors.white,
-                  child:
-                      Image.asset('assets/images/sumquiz_logo.png', width: 150),
+                  child: Image.asset('assets/images/sumquiz_logo.png', width: 150),
                 )
               : Image.asset('assets/images/sumquiz_logo.png', width: 150),
         ),

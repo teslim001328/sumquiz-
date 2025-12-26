@@ -189,7 +189,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       height: 8,
       width: _currentPage == index ? 24 : 8,
       decoration: BoxDecoration(
-        color: _currentPage == index ? kPrimaryTextColor : kSecondaryTextColor.withValues(alpha: 0.5),
+        color: _currentPage == index ? kPrimaryTextColor : kSecondaryTextColor.withOpacity(0.5),
         borderRadius: BorderRadius.circular(12),
       ),
     );

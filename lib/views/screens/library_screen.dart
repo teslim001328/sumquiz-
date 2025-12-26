@@ -13,6 +13,7 @@ import '../../models/editable_content.dart';
 import '../../models/summary_model.dart';
 import '../../models/quiz_model.dart';
 import '../../models/flashcard_set.dart';
+import '../../utils/app_colors.dart';
 import '../../models/folder.dart'; // Added
 import 'edit_content_screen.dart';
 import 'summary_screen.dart';
@@ -290,7 +291,7 @@ class LibraryScreenState extends State<LibraryScreen>
               margin: const EdgeInsets.only(bottom: 12),
               child: ListTile(
                 leading:
-                    const Icon(Icons.folder, size: 40, color: Colors.amber),
+                    const Icon(Icons.folder, size: 40, color: AppColors.accent),
                 title: Text(folder.name, style: theme.textTheme.titleMedium),
                 subtitle: Text(
                     'Created: ${folder.createdAt.toString().split(' ')[0]}'),
@@ -480,11 +481,11 @@ class LibraryScreenState extends State<LibraryScreen>
   Icon _getIconForType(LibraryItemType type) {
     switch (type) {
       case LibraryItemType.summary:
-        return const Icon(Icons.article_outlined, color: Colors.blueAccent);
+        return const Icon(Icons.article_outlined, color: AppColors.primary);
       case LibraryItemType.quiz:
-        return const Icon(Icons.quiz_outlined, color: Colors.greenAccent);
+        return const Icon(Icons.quiz_outlined, color: AppColors.secondary);
       case LibraryItemType.flashcards:
-        return const Icon(Icons.style_outlined, color: Colors.orangeAccent);
+        return const Icon(Icons.style_outlined, color: AppColors.accent);
     }
   }
 
@@ -602,9 +603,9 @@ class LibraryScreenState extends State<LibraryScreen>
             },
           ),
           ListTile(
-            leading: const Icon(Icons.delete_outline, color: Colors.redAccent),
+            leading: const Icon(Icons.delete_outline, color: AppColors.error),
             title:
-                const Text('Delete', style: TextStyle(color: Colors.redAccent)),
+                const Text('Delete', style: TextStyle(color: AppColors.error)),
             onTap: () {
               if (!mounted) return;
               Navigator.pop(ctx);
@@ -728,7 +729,7 @@ class LibraryScreenState extends State<LibraryScreen>
           TextButton(
               onPressed: () => Navigator.of(ctx).pop(true),
               child: const Text('Delete',
-                  style: TextStyle(color: Colors.redAccent))),
+                  style: TextStyle(color: AppColors.error))),
         ],
       ),
     );

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sumquiz/services/local_database_service.dart';
-import 'package:sumquiz/models/folder.dart';
-import 'package:sumquiz/models/local_summary.dart';
-import 'package:sumquiz/models/local_quiz.dart';
-import 'package:sumquiz/models/local_flashcard_set.dart';
-import 'package:go_router/go_router.dart';
+import '../../services/local_database_service.dart';
+import '../../models/folder.dart';
+import '../../models/local_summary.dart';
+import '../../models/local_quiz.dart';
+import '../../models/local_flashcard_set.dart';
+import '../../utils/app_colors.dart';
 
 class ResultsViewScreen extends StatefulWidget {
   final String folderId;
@@ -92,7 +92,7 @@ class _ResultsViewScreenState extends State<ResultsViewScreen>
       appBar: AppBar(
         title: const Text('Results View'),
         centerTitle: true,
-        backgroundColor: theme.scaffoldBackgroundColor,
+        backgroundColor: Colors.white,
         elevation: 0,
         actions: [
           IconButton(
@@ -112,7 +112,7 @@ class _ResultsViewScreenState extends State<ResultsViewScreen>
           unselectedLabelColor:
               theme.colorScheme.onSurface.withValues(alpha: 0.6),
           indicatorColor: theme.colorScheme.primary,
-          indicatorWeight: 3,
+          indicatorWeight: 2,
         ),
       ),
       body: _isLoading
@@ -145,35 +145,24 @@ class _ResultsViewScreenState extends State<ResultsViewScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                _summary!.title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.share),
-                onPressed: () {
-                  // Implement share functionality
-                },
-              ),
-            ],
+          Text(
+            _summary!.title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color: Colors.grey[50],
-              borderRadius: BorderRadius.circular(8),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(0),
               border: Border.all(color: Colors.grey[300]!),
             ),
             child: Text(
               _summary!.content,
-              style: const TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 14, height: 1.6),
             ),
           ),
           const SizedBox(height: 16),
@@ -183,7 +172,7 @@ class _ResultsViewScreenState extends State<ResultsViewScreen>
               ..._summary!.tags.map(
                 (tag) => Chip(
                   label: Text(tag),
-                  backgroundColor: Colors.blue[100],
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                 ),
               ),
             ],
@@ -208,92 +197,72 @@ class _ResultsViewScreenState extends State<ResultsViewScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                _quiz!.title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.play_arrow),
-                onPressed: () {
-                  // Navigate to quiz screen
-                  if (mounted) {
-                    context.push('/quiz/${_quiz!.id}');
-                  }
-                },
-              ),
-            ],
+          Text(
+            _quiz!.title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 16),
           ...List.generate(_quiz!.questions.length, (index) {
             final question = _quiz!.questions[index];
-            return Card(
+            return Container(
               margin: const EdgeInsets.only(bottom: 16),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Question ${index + 1}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      question.question,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(height: 12),
-                    ...List.generate(question.options.length, (optionIndex) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Container(
-                          padding: const EdgeInsets.all(12.0),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey[300]!),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 24,
-                                height: 24,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.grey[400]!),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    String.fromCharCode(65 + optionIndex),
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey[300]!),
+                borderRadius: BorderRadius.circular(0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    question.question,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 12),
+                  ...List.generate(question.options.length, (optionIndex) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Container(
+                        padding: const EdgeInsets.all(12.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey[300]!),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.grey[400]!),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  String.fromCharCode(65 + optionIndex),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  question.options[optionIndex],
-                                  style: const TextStyle(fontSize: 14),
-                                ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                question.options[optionIndex],
+                                style: const TextStyle(fontSize: 14),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      );
-                    }),
-                  ],
-                ),
+                      ),
+                    );
+                  }),
+                ],
               ),
             );
           }),
@@ -317,84 +286,72 @@ class _ResultsViewScreenState extends State<ResultsViewScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                _flashcardSet!.title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.play_arrow),
-                onPressed: () {
-                  // Navigate to flashcards screen
-                  if (mounted) {
-                    context.push('/flashcards/${_flashcardSet!.id}');
-                  }
-                },
-              ),
-            ],
+          Text(
+            _flashcardSet!.title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 16),
           ..._flashcardSet!.flashcards.map((flashcard) {
-            return Card(
+            return Container(
               margin: const EdgeInsets.only(bottom: 16),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12.0),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[50],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.blue[200]!),
-                      ),
-                      child: const Text(
-                        'Front',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                        ),
-                      ),
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey[300]!),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: AppColors.primary),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      flashcard.question,
-                      style: const TextStyle(
-                        fontSize: 16,
+                    child: const Text(
+                      'Front',
+                      style: TextStyle(
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(12.0),
-                      decoration: BoxDecoration(
-                        color: Colors.green[50],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.green[200]!),
-                      ),
-                      child: const Text(
-                        'Back',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                        ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    flashcard.question,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: AppColors.secondary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: AppColors.secondary),
+                    ),
+                    child: const Text(
+                      'Back',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.secondary,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      flashcard.answer,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    flashcard.answer,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ],
               ),
             );
           }),

@@ -7,21 +7,12 @@ class UserModel {
   final String displayName;
   final DateTime? subscriptionExpiry;
 
-  // Progress Tracking Fields
-  final double currentMomentum;
-  final int dailyGoal;
-  final int itemsCompletedToday;
-  final DateTime? updatedAt;
+  // Mission Engine 2.0 Fields
+  final double currentMomentum; // Living score (0-500+)
   final double momentumDecayRate; // Default 0.05 (5% daily)
   final int missionCompletionStreak; // Consecutive missions done
   final int difficultyPreference; // Inferred (1-5) based on history
   final String preferredStudyTime; // "HH:mm" format, default "09:00"
-
-  // Freemium Usage Tracking
-  final int weeklyUploads;
-  final int folderCount;
-  final int srsCardCount;
-  final DateTime? lastWeeklyReset;
 
   UserModel({
     required this.uid,
@@ -33,13 +24,6 @@ class UserModel {
     this.missionCompletionStreak = 0,
     this.difficultyPreference = 3,
     this.preferredStudyTime = "09:00",
-    this.dailyGoal = 5,
-    this.itemsCompletedToday = 0,
-    this.weeklyUploads = 0,
-    this.folderCount = 0,
-    this.srsCardCount = 0,
-    this.lastWeeklyReset,
-    this.updatedAt,
   });
 
   bool get isPro {
@@ -65,13 +49,6 @@ class UserModel {
       missionCompletionStreak: data['missionCompletionStreak'] ?? 0,
       difficultyPreference: data['difficultyPreference'] ?? 3,
       preferredStudyTime: data['preferredStudyTime'] ?? "09:00",
-      dailyGoal: data['dailyGoal'] ?? 5,
-      itemsCompletedToday: data['itemsCompletedToday'] ?? 0,
-      weeklyUploads: data['weeklyUploads'] ?? 0,
-      folderCount: data['folderCount'] ?? 0,
-      'srsCardCount': data['srsCardCount'] ?? 0,
-      lastWeeklyReset: (data['lastWeeklyReset'] as Timestamp?)?.toDate(),
-      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -86,13 +63,6 @@ class UserModel {
       'missionCompletionStreak': missionCompletionStreak,
       'difficultyPreference': difficultyPreference,
       'preferredStudyTime': preferredStudyTime,
-      'dailyGoal': dailyGoal,
-      'itemsCompletedToday': itemsCompletedToday,
-      'weeklyUploads': weeklyUploads,
-      'folderCount': folderCount,
-      'srsCardCount': srsCardCount,
-      if (lastWeeklyReset != null) 'lastWeeklyReset': Timestamp.fromDate(lastWeeklyReset!),
-      if (updatedAt != null) 'updatedAt': Timestamp.fromDate(updatedAt!),
     };
   }
 
@@ -106,13 +76,6 @@ class UserModel {
     int? missionCompletionStreak,
     int? difficultyPreference,
     String? preferredStudyTime,
-    int? dailyGoal,
-    int? itemsCompletedToday,
-    int? weeklyUploads,
-    int? folderCount,
-    int? srsCardCount,
-    DateTime? lastWeeklyReset,
-    DateTime? updatedAt,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -125,13 +88,6 @@ class UserModel {
           missionCompletionStreak ?? this.missionCompletionStreak,
       difficultyPreference: difficultyPreference ?? this.difficultyPreference,
       preferredStudyTime: preferredStudyTime ?? this.preferredStudyTime,
-      dailyGoal: dailyGoal ?? this.dailyGoal,
-      itemsCompletedToday: itemsCompletedToday ?? this.itemsCompletedToday,
-      weeklyUploads: weeklyUploads ?? this.weeklyUploads,
-      folderCount: folderCount ?? this.folderCount,
-      srsCardCount: srsCardCount ?? this.srsCardCount,
-      lastWeeklyReset: lastWeeklyReset ?? this.lastWeeklyReset,
-      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 }

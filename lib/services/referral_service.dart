@@ -104,7 +104,7 @@ class ReferralService {
         // Block 4: Atomic Writes
         // All writes MUST use the `transaction` object.
 
-        // 4.1: Update and Reward the New User (+7 days Pro)
+        // 4.1: Update and Reward the New User (+3 days Pro)
         final newUserData = newUserDoc.exists
             ? newUserDoc.data() as Map<String, dynamic>
             : <String, dynamic>{};
@@ -112,7 +112,7 @@ class ReferralService {
             (newUserData['subscriptionExpiry'] as Timestamp?)?.toDate() ??
                 DateTime.now();
         final newExpiryDateForNewUser =
-            currentNewUserExpiry.add(const Duration(days: 7));
+            currentNewUserExpiry.add(const Duration(days: 3));
 
         transaction.set(
             newUserDocRef,
@@ -126,7 +126,7 @@ class ReferralService {
             SetOptions(merge: true));
 
         developer.log(
-            'Prepared write for newUser $newUserId: +7 days Pro, marked as referred by ${referrerDocRef.id}.',
+            'Prepared write for newUser $newUserId: +3 days Pro, marked as referred by ${referrerDocRef.id}.',
             name: 'com.example.myapp.ReferralService.transaction');
 
         // 4.2: Update and Reward the Referrer
@@ -147,8 +147,8 @@ class ReferralService {
         // Max 12 rewards = 12 * 7 days = 84 days (~3 months) of free Pro via referrals
         const int maxReferralRewards = 12;
 
-        // Reward logic: Every 2 referrals, grant +7 days and reset the counter.
-        if (newReferralsCount >= 2 && currentRewards < maxReferralRewards) {
+        // Reward logic: Every 3 referrals, grant +7 days and reset the counter.
+        if (newReferralsCount >= 3 && currentRewards < maxReferralRewards) {
           newReferrerExpiryDate =
               currentReferrerExpiry.add(const Duration(days: 7));
           newRewardsCount += 1;
@@ -156,7 +156,7 @@ class ReferralService {
           developer.log(
               'Referrer ${referrerDocRef.id} hit reward threshold. Granting +7 days and resetting counter.',
               name: 'com.example.myapp.ReferralService.transaction');
-        } else if (newReferralsCount >= 2 &&
+        } else if (newReferralsCount >= 3 &&
             currentRewards >= maxReferralRewards) {
           // Still reset counter for stats purposes, but don't grant more time
           newReferralsCount = 0;
@@ -277,7 +277,7 @@ class ReferralService {
 
  3. Expected Final State (after transaction):
     - Referrer (User A) Document (`/users/{UserA_UID}`):
-      - `referrals`: 0 (Resets because 1 + 1 = 2, triggering the reward)
+      - `referrals`: 0 (Resets because 2 + 1 = 3, triggering the reward)
       - `totalReferrals`: 6 (Incremented by 1)
       - `referralRewards`: 2 (Incremented by 1)
       - `subscriptionExpiry`: (Original date + 7 days)
@@ -287,7 +287,7 @@ class ReferralService {
       - `referredBy`: "{UserA_UID}"
       - `referralAppliedAt`: (Server timestamp of the transaction)
       - `isPro`: true
-      - `subscriptionExpiry`: (Date of signup + 7 days)
+      - `subscriptionExpiry`: (Date of signup + 3 days)
 
  4. Idempotency Test:
     - If you attempt to run the `applyReferralCode` function for User B again,

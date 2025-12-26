@@ -3,13 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../services/auth_service.dart';
-import '../../services/firestore_service.dart';
 import '../../models/flashcard.dart';
 import '../../models/flashcard_set.dart';
 import '../../models/user_model.dart';
 import '../../models/daily_mission.dart';
 import '../../services/mission_service.dart';
-import '../../services/user_service.dart';
+import '../../services/firestore_service.dart';
 import 'flashcards_screen.dart';
 
 class ReviewScreen extends StatefulWidget {
@@ -74,7 +73,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
         Provider.of<FirestoreService>(context, listen: false);
     // Fetch all sets (MVP optimization: assume not too many sets)
     final sets = await firestoreService.streamFlashcardSets(userId).first;
-    final allCards = sets.expand((s) => s.flashcards).toList();
+    final allCards = sets.expand((s) => s!.flashcards).toList();
 
     return allCards.where((c) => cardIds.contains(c.id)).toList();
   }
@@ -141,10 +140,6 @@ class _ReviewScreenState extends State<ReviewScreen> {
     final missionService = Provider.of<MissionService>(context, listen: false);
     await missionService.completeMission(userId, _dailyMission!, score);
 
-    // Increment user's completed items for the day
-    final userService = UserService();
-    await userService.incrementItemsCompleted(userId);
-
     // Reload state
     _loadMission();
   }
@@ -210,58 +205,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 16),
-          // Daily Goal Progress
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: theme.cardColor,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: theme.dividerColor),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Daily Goal', style: theme.textTheme.titleMedium),
-                    Text(
-                        '${user?.itemsCompletedToday ?? 0}/${user?.dailyGoal ?? 5} items',
-                        style: theme.textTheme.bodyMedium),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                LinearProgressIndicator(
-                  value: (user?.dailyGoal ?? 5) > 0
-                      ? ((user?.itemsCompletedToday ?? 0) /
-                              (user?.dailyGoal ?? 5))
-                          .clamp(0.0, 1.0)
-                      : 0.0,
-                  backgroundColor: theme.dividerColor,
-                  color: ((user?.itemsCompletedToday ?? 0) >=
-                          (user?.dailyGoal ?? 5))
-                      ? Colors.green
-                      : theme.colorScheme.primary,
-                  minHeight: 8,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  ((user?.itemsCompletedToday ?? 0) >= (user?.dailyGoal ?? 5))
-                      ? '🎉 Goal achieved!'
-                      : '${(((user?.itemsCompletedToday ?? 0) / (user?.dailyGoal ?? 5)) * 100).toStringAsFixed(0)}% complete',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: ((user?.itemsCompletedToday ?? 0) >=
-                            (user?.dailyGoal ?? 5))
-                        ? Colors.green
-                        : theme.colorScheme.primary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 32),
 
           // Mission Card
           Expanded(
@@ -272,7 +216,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: Colors.black.withOpacity(0.1),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   )

@@ -3,6 +3,7 @@ import 'package:sumquiz/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../utils/app_colors.dart';
 
 enum AuthMode { Login, SignUp }
 
@@ -24,11 +25,11 @@ class _AuthScreenState extends State<AuthScreen>
   bool _isLoading = false;
 
   // Consistent color palette from Onboarding
-  static const Color kBackgroundColor = Colors.black;
-  static const Color kPrimaryTextColor = Colors.white;
+  static const Color kBackgroundColor = AppColors.background;
+  static const Color kPrimaryTextColor = AppColors.textPrimary;
   static const Color kSecondaryTextColor = Color(0xFFB3B3B3);
-  static const Color kButtonColor = Colors.white;
-  static const Color kButtonTextColor = Colors.black;
+  static const Color kButtonColor = AppColors.surface;
+  static const Color kButtonTextColor = AppColors.textPrimary;
   static const Color kTextFieldFillColor = Color(0xFF1A1A1A);
 
   @override
@@ -383,7 +384,7 @@ class _AuthScreenState extends State<AuthScreen>
         fillColor: kTextFieldFillColor,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[800]!),
+          borderSide: BorderSide(color: AppColors.textSecondary),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -391,11 +392,11 @@ class _AuthScreenState extends State<AuthScreen>
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.redAccent),
+          borderSide: const BorderSide(color: AppColors.error),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.redAccent, width: 2),
+          borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
       ),
       obscureText: obscureText,

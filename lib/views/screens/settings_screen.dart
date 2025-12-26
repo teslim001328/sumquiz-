@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sumquiz/views/widgets/pro_gate.dart';
 
-/// Modern, intuitive settings screen with improved organization and visual hierarchy
-/// Groups related settings together and provides clear visual cues for premium features
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -50,12 +47,12 @@ class SettingsScreen extends StatelessWidget {
                 onTap: () => context.push('/settings/privacy-about'),
               ),
               const SizedBox(height: 24),
-              _buildSectionTitle(context, 'Preferences'),
+              _buildSectionTitle(context, 'Content & Display'),
               _buildSettingsCard(
                 context,
                 icon: Icons.palette,
-                title: 'Display',
-                subtitle: 'Adjust app appearance and theme',
+                title: 'Preferences',
+                subtitle: 'Adjust app experience & appearance',
                 onTap: () => context.push('/settings/preferences'),
               ),
               _buildSettingsCard(
@@ -66,7 +63,6 @@ class SettingsScreen extends StatelessWidget {
                 onTap: () => context.push('/settings/data-storage'),
               ),
               const SizedBox(height: 24),
-              _buildSectionTitle(context, 'Premium Features'),
               _buildSubscriptionCard(context),
               const SizedBox(height: 16),
               _buildReferralCard(context),
@@ -101,27 +97,23 @@ class SettingsScreen extends StatelessWidget {
     return Card(
       elevation: 0,
       color: theme.cardColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         onTap: onTap,
         leading: Container(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
+            color: theme.colorScheme.primary.withAlpha(26),
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, color: theme.colorScheme.primary, size: 24),
         ),
         title: Text(title,
             style: theme.textTheme.titleMedium
-                ?.copyWith(fontWeight: FontWeight.w600)),
-        subtitle: Text(subtitle,
-            style: theme.textTheme.bodyMedium
-                ?.copyWith(color: theme.textTheme.bodySmall?.color)),
+                ?.copyWith(fontWeight: FontWeight.bold)),
+        subtitle: Text(subtitle, style: theme.textTheme.bodyMedium),
         trailing: Icon(Icons.arrow_forward_ios,
             color: theme.iconTheme.color, size: 18),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
     );
   }
@@ -130,10 +122,9 @@ class SettingsScreen extends StatelessWidget {
     final theme = Theme.of(context);
     return Card(
       elevation: 2,
-      shadowColor: theme.colorScheme.primary.withValues(alpha: 0.3),
-      color: theme.colorScheme.primaryContainer,
+      shadowColor: theme.colorScheme.primary.withAlpha(77),
+      color: theme.colorScheme.primary,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: () => context.push('/subscription'),
         borderRadius: BorderRadius.circular(16),
@@ -141,39 +132,31 @@ class SettingsScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(Icons.workspace_premium_outlined,
-                    color: theme.colorScheme.primary, size: 32),
-              ),
-              const SizedBox(width: 16),
+              Icon(Icons.diamond_outlined,
+                  color: theme.colorScheme.onPrimary, size: 36),
+              const SizedBox(width: 20),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'SumQuiz Pro',
+                      'Upgrade to Pro',
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onPrimaryContainer,
+                        color: theme.colorScheme.onPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Unlock all features and study without limits.',
                       style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onPrimaryContainer
-                              .withValues(alpha: 0.9)),
+                          color: theme.colorScheme.onPrimary.withAlpha(230)),
                     ),
                   ],
                 ),
               ),
               Icon(Icons.arrow_forward_ios,
-                  color: theme.colorScheme.onPrimaryContainer, size: 20),
+                  color: theme.colorScheme.onPrimary, size: 20),
             ],
           ),
         ),
@@ -185,29 +168,26 @@ class SettingsScreen extends StatelessWidget {
     final theme = Theme.of(context);
     return Card(
       elevation: 0,
-      color: theme.colorScheme.secondaryContainer,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      margin: const EdgeInsets.only(bottom: 12),
+      color: theme.colorScheme.secondaryContainer.withAlpha(128),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         onTap: () => context.push('/referral'),
         leading: Container(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: theme.colorScheme.secondary.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(12),
+            color: theme.colorScheme.secondary.withAlpha(26),
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(Icons.card_giftcard,
               color: theme.colorScheme.secondary, size: 24),
         ),
         title: Text('Refer a Friend',
             style: theme.textTheme.titleMedium
-                ?.copyWith(fontWeight: FontWeight.w600)),
+                ?.copyWith(fontWeight: FontWeight.bold)),
         subtitle: Text('Get rewards for inviting friends',
-            style: theme.textTheme.bodyMedium
-                ?.copyWith(color: theme.textTheme.bodySmall?.color)),
+            style: theme.textTheme.bodyMedium),
         trailing: Icon(Icons.arrow_forward_ios,
             color: theme.iconTheme.color, size: 18),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
     );
   }

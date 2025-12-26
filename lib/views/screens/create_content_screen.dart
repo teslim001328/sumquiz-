@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sumquiz/services/content_extraction_service.dart';
+import '../../services/content_extraction_service.dart';
+import '../../utils/app_colors.dart';
 import 'dart:typed_data';
 
 class CreateContentScreen extends StatefulWidget {
@@ -16,19 +17,9 @@ class _CreateContentScreenState extends State<CreateContentScreen> {
   final List<ContentItem> _contentItems = [];
   final ImagePicker _imagePicker = ImagePicker();
   bool _isLoading = false;
-  final TextEditingController _titleController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
-    // Add an initial text card by default
-    _addTextCard();
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    super.dispose();
   }
 
   void _addTextCard() {
@@ -213,15 +204,76 @@ class _CreateContentScreenState extends State<CreateContentScreen> {
     }
   }
 
+  void _showAddCardOptions() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  'Add New Card',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              ListTile(
+                leading:
+                    const Icon(Icons.text_fields, color: AppColors.primary),
+                title: const Text('Add Text Card'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _addTextCard();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.link, color: AppColors.primary),
+                title: const Text('Add Link Card'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _addLinkCard();
+                },
+              ),
+              ListTile(
+                leading:
+                    const Icon(Icons.picture_as_pdf, color: AppColors.primary),
+                title: const Text('Add PDF Card'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _addPdfCard();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.image, color: AppColors.primary),
+                title: const Text('Add Image Card'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _addImageCard();
+                },
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Content'),
         centerTitle: true,
-        backgroundColor: theme.scaffoldBackgroundColor,
+        backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: Column(
@@ -229,49 +281,18 @@ class _CreateContentScreenState extends State<CreateContentScreen> {
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(16.0),
-              itemCount: _contentItems.length + 1,
+              itemCount: _contentItems.length,
               itemBuilder: (context, index) {
-                if (index == _contentItems.length) {
-                  return _buildTitleField();
-                }
                 return _buildContentCard(index, _contentItems[index]);
               },
             ),
           ),
-          _buildAddCardButtons(),
-          const SizedBox(height: 16),
-          _buildNextButton(),
-          const SizedBox(height: 16),
         ],
       ),
-    );
-  }
-
-  Widget _buildTitleField() {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Title (Optional)',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _titleController,
-              decoration: const InputDecoration(
-                hintText: 'Enter a title for your content...',
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ],
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddCardOptions,
+        backgroundColor: AppColors.primary,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -290,345 +311,304 @@ class _CreateContentScreenState extends State<CreateContentScreen> {
   }
 
   Widget _buildTextCard(int index) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Add Text',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Text Input',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => _removeCard(index),
-                ),
-              ],
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, size: 20),
+                onPressed: () => _removeCard(index),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            height: 120,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              border: Border.all(color: Color(0xFFE0E0E0)),
+              borderRadius: BorderRadius.circular(4),
             ),
-            const SizedBox(height: 8),
-            TextField(
-              maxLines: 5,
+            child: TextField(
+              maxLines: null,
+              expands: true,
               decoration: const InputDecoration(
-                hintText: 'Enter or paste your text here...',
-                border: OutlineInputBorder(),
+                hintText: 'Enter your text here...',
+                border: InputBorder.none,
               ),
               onChanged: (value) {
                 _contentItems[index].content = value;
               },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildLinkCard(int index) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Add Link',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Web Link',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => _removeCard(index),
-                ),
-              ],
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, size: 20),
+                onPressed: () => _removeCard(index),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            height: 48,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              border: Border.all(color: Color(0xFFE0E0E0)),
+              borderRadius: BorderRadius.circular(4),
             ),
-            const SizedBox(height: 8),
-            TextField(
+            child: TextField(
               decoration: const InputDecoration(
-                hintText: 'https://example.com',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.link),
+                hintText: 'https://example.com/link',
+                border: InputBorder.none,
               ),
               keyboardType: TextInputType.url,
               onChanged: (value) {
                 _contentItems[index].content = value;
               },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildPdfCard(int index) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Upload PDF',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, size: 20),
+                onPressed: () => _removeCard(index),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (_contentItems[index].filePath == null)
+            Column(
               children: [
+                ElevatedButton(
+                  onPressed: () => _pickPdf(index),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF4285F4),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
+                  ),
+                  child: const Text('Choose PDF'),
+                ),
+                const SizedBox(height: 8),
                 const Text(
-                  'Upload PDF',
+                  'No file selected',
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.grey,
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => _removeCard(index),
+              ],
+            )
+          else
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ElevatedButton(
+                  onPressed: () => _pickPdf(index),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF4285F4),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
+                  ),
+                  child: const Text('Choose PDF'),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _contentItems[index].fileName ?? '',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            if (_contentItems[index].filePath == null)
-              Column(
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: () => _pickPdf(index),
-                    icon: const Icon(Icons.upload_file),
-                    label: const Text('Select PDF'),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Choose a PDF file from your device',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              )
-            else
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.picture_as_pdf, color: Colors.red),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        _contentItems[index].fileName ?? '',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close, size: 18),
-                      onPressed: () {
-                        setState(() {
-                          _contentItems[index].filePath = null;
-                          _contentItems[index].fileName = null;
-                          _contentItems[index].fileBytes = null;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }
 
   Widget _buildImageCard(int index) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Upload Image',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => _removeCard(index),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (_contentItems[index].filePath == null)
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: () => _pickImage(index),
-                        icon: const Icon(Icons.photo_library),
-                        label: const Text('Gallery'),
-                      ),
-                      ElevatedButton.icon(
-                        onPressed: () => _captureImage(index),
-                        icon: const Icon(Icons.camera_alt),
-                        label: const Text('Camera'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Select an image from gallery or capture a new one',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              )
-            else
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.image, color: Colors.blue),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        _contentItems[index].fileName ?? '',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close, size: 18),
-                      onPressed: () {
-                        setState(() {
-                          _contentItems[index].filePath = null;
-                          _contentItems[index].fileName = null;
-                          _contentItems[index].fileBytes = null;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAddCardButtons() {
-    return Card(
-      margin: const EdgeInsets.all(16),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Add New Card',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: _addTextCard,
-                  icon: const Icon(Icons.text_fields),
-                  label: const Text('Text'),
-                ),
-                ElevatedButton.icon(
-                  onPressed: _addLinkCard,
-                  icon: const Icon(Icons.link),
-                  label: const Text('Link'),
-                ),
-                ElevatedButton.icon(
-                  onPressed: _addPdfCard,
-                  icon: const Icon(Icons.picture_as_pdf),
-                  label: const Text('PDF'),
-                ),
-                ElevatedButton.icon(
-                  onPressed: _addImageCard,
-                  icon: const Icon(Icons.image),
-                  label: const Text('Image'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNextButton() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: _isLoading ? null : _navigateToExtraction,
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
-          child: _isLoading
-              ? const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Upload Image',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, size: 20),
+                onPressed: () => _removeCard(index),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (_contentItems[index].filePath == null)
+            Column(
+              children: [
+                ElevatedButton(
+                  onPressed: () => _pickImage(index),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF4285F4),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                    SizedBox(width: 12),
-                    Text(
-                      'Processing...',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                )
-              : const Text(
-                  'Next',
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
+                  ),
+                  child: const Text('Choose Image'),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'No image selected',
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.grey,
                   ),
                 ),
-        ),
+              ],
+            )
+          else
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ElevatedButton(
+                  onPressed: () => _pickImage(index),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF4285F4),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
+                  ),
+                  child: const Text('Choose Image'),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _contentItems[index].fileName ?? '',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+        ],
       ),
     );
   }

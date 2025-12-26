@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, PlatformDispatcher;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +14,6 @@ import 'package:sumquiz/services/enhanced_ai_service.dart';
 import 'package:sumquiz/services/firestore_service.dart';
 import 'package:sumquiz/services/usage_service.dart';
 import 'package:sumquiz/view_models/quiz_view_model.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:sumquiz/router/app_router.dart';
 import 'package:sumquiz/providers/navigation_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -21,7 +21,6 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:sumquiz/services/iap_service.dart';
 import 'package:sumquiz/services/referral_service.dart';
 import 'package:sumquiz/services/notification_service.dart';
-import 'package:sumquiz/services/user_service.dart';
 import 'package:sumquiz/view_models/referral_view_model.dart';
 import 'package:sumquiz/services/content_extraction_service.dart';
 import 'package:sumquiz/services/spaced_repetition_service.dart';
@@ -64,8 +63,8 @@ void main() async {
 
   if (!kIsWeb) {
     await FirebaseAppCheck.instance.activate(
-      providerAndroid: AndroidProvider.debug,
-      providerApple: AppleProvider.debug,
+      androidProvider: AndroidProvider.debug,
+      appleProvider: AppleProvider.debug,
     );
   }
 
@@ -95,13 +94,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
         Provider<AuthService>.value(value: authService),
         Provider<NotificationService>.value(value: notificationService),
-        Provider<AIService>(
-            create: (context) =>
-                AIService(iapService: context.read<IAPService?>())),
+        Provider<AIService>(create: (_) => AIService()),
         Provider<EnhancedAIService>(create: (_) => EnhancedAIService()),
         Provider<ContentExtractionService>(
             create: (_) => ContentExtractionService()),
-        Provider<UserService>(create: (_) => UserService()),
         Provider<FirestoreService>(create: (_) => FirestoreService()),
         Provider<LocalDatabaseService>(create: (_) => LocalDatabaseService()),
         Provider<SpacedRepetitionService>(
@@ -152,10 +148,9 @@ class MyApp extends StatelessWidget {
             return UsageService(user?.uid ?? '');
           },
         ),
-        ProxyProvider3<AuthService, LocalDatabaseService, IAPService?,
-            EnhancedAIService>(
-          update: (context, authService, localDb, iapService, previous) {
-            return EnhancedAIService(iapService: iapService);
+        ProxyProvider2<AuthService, LocalDatabaseService, EnhancedAIService>(
+          update: (context, authService, localDb, previous) {
+            return EnhancedAIService();
           },
         ),
         ProxyProvider<AuthService, ReferralService>(

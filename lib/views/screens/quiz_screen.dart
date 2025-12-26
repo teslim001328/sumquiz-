@@ -11,6 +11,7 @@ import '../../services/local_database_service.dart';
 import '../../services/usage_service.dart';
 import '../../view_models/quiz_view_model.dart';
 import '../widgets/upgrade_dialog.dart';
+import '../../utils/app_colors.dart';
 
 class QuizScreen extends StatefulWidget {
   final LocalQuiz? quiz;
@@ -144,10 +145,10 @@ class _QuizScreenState extends State<QuizScreen> {
     final question = _questions[_currentQuestionIndex];
     final bool isCorrect = question.options[index] == question.correctAnswer;
     if (isCorrect) {
-      return Colors.green.shade100;
+      return AppColors.secondary.withValues(alpha: 0.1);
     }
     if (index == _selectedAnswerIndex && !isCorrect) {
-      return Colors.red.shade100;
+      return AppColors.error.withValues(alpha: 0.1);
     }
     return theme.cardColor;
   }
@@ -160,10 +161,10 @@ class _QuizScreenState extends State<QuizScreen> {
     final bool isCorrect = question.options[index] == question.correctAnswer;
 
     if (isCorrect) {
-      return const Icon(Icons.check_circle, color: Colors.green);
+      return const Icon(Icons.check_circle, color: AppColors.secondary);
     }
     if (index == _selectedAnswerIndex && !isCorrect) {
-      return const Icon(Icons.cancel, color: Colors.red);
+      return const Icon(Icons.cancel, color: AppColors.error);
     }
     return Icon(Icons.radio_button_unchecked, color: theme.disabledColor);
   }
@@ -174,7 +175,7 @@ class _QuizScreenState extends State<QuizScreen> {
         _quizId == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Cannot save an empty quiz."),
-        backgroundColor: Colors.orange,
+        backgroundColor: AppColors.accent,
       ));
       return;
     }
@@ -197,14 +198,14 @@ class _QuizScreenState extends State<QuizScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Quiz progress saved!'),
-          backgroundColor: Colors.green,
+          backgroundColor: AppColors.secondary,
         ));
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Error saving progress: $e'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ));
       }
     }
@@ -241,7 +242,7 @@ class _QuizScreenState extends State<QuizScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Final score saved!'),
-          backgroundColor: Colors.green,
+          backgroundColor: AppColors.secondary,
         ));
         Navigator.of(context).pop();
       }
@@ -249,7 +250,7 @@ class _QuizScreenState extends State<QuizScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Error saving final score: $e'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ));
       }
     }

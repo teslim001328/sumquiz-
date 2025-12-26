@@ -13,6 +13,7 @@ import '../../models/user_model.dart';
 import '../../services/firestore_service.dart';
 import '../../services/enhanced_ai_service.dart';
 import '../../services/usage_service.dart';
+import '../../utils/app_colors.dart';
 import '../widgets/upgrade_dialog.dart';
 import 'quiz_screen.dart';
 import '../../models/local_quiz.dart';
@@ -162,7 +163,7 @@ class SummaryScreenState extends State<SummaryScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Summary content copied to clipboard!'),
-        backgroundColor: Colors.green,
+        backgroundColor: AppColors.secondary,
       ),
     );
   }
@@ -184,7 +185,7 @@ class SummaryScreenState extends State<SummaryScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Summary saved to library!'),
-            backgroundColor: Colors.green,
+            backgroundColor: AppColors.secondary,
           ),
         );
       } catch (e, s) {
@@ -194,7 +195,7 @@ class SummaryScreenState extends State<SummaryScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Error saving summary.'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -246,7 +247,7 @@ class SummaryScreenState extends State<SummaryScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Error generating quiz.'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -332,13 +333,12 @@ class SummaryScreenState extends State<SummaryScreen> {
             padding: const EdgeInsets.only(top: 8.0),
             child: Center(
               child: TextButton(
-                onPressed: () => setState(() {
-                  _pdfBytes = null;
-                  _pdfFileName = null;
-                }),
-                child: const Text('Clear PDF',
-                    style: TextStyle(color: Colors.redAccent)),
-              ),
+                  onPressed: () => setState(() {
+                        _pdfBytes = null;
+                        _pdfFileName = null;
+                      }),
+                  child: const Text('Clear PDF',
+                      style: TextStyle(color: AppColors.error))),
             ),
           ),
         const SizedBox(height: 32),
@@ -379,7 +379,7 @@ class SummaryScreenState extends State<SummaryScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline, color: Colors.red, size: 64),
+          const Icon(Icons.error_outline, color: AppColors.error, size: 64),
           const SizedBox(height: 16),
           Text('Oops! Something went wrong.',
               style: theme.textTheme.headlineSmall,

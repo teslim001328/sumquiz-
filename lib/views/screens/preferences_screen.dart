@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sumquiz/providers/theme_provider.dart';
 
-/// Modern preferences screen with enhanced visual design and additional options
-/// Allows users to customize their app experience with theme, font size, and more
 class PreferencesScreen extends StatefulWidget {
   const PreferencesScreen({super.key});
 
@@ -13,8 +11,6 @@ class PreferencesScreen extends StatefulWidget {
 
 class _PreferencesScreenState extends State<PreferencesScreen> {
   int _fontSizeIndex = 1;
-  bool _notificationsEnabled = true;
-  bool _hapticFeedbackEnabled = true;
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +22,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       appBar: AppBar(
         title: Text(
           'Preferences',
-          style: theme.textTheme.headlineSmall
-              ?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.headlineSmall,
         ),
         centerTitle: true,
         backgroundColor: theme.scaffoldBackgroundColor,
@@ -47,30 +42,6 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                 _buildDarkModeTile(themeProvider, theme),
                 const Divider(height: 32),
                 _buildFontSizeSelector(themeProvider, theme),
-                const Divider(height: 32),
-                _buildToggleOption(
-                  context,
-                  title: 'Notifications',
-                  subtitle: 'Enable or disable app notifications',
-                  value: _notificationsEnabled,
-                  onChanged: (value) {
-                    setState(() {
-                      _notificationsEnabled = value;
-                    });
-                  },
-                ),
-                const Divider(height: 32),
-                _buildToggleOption(
-                  context,
-                  title: 'Haptic Feedback',
-                  subtitle: 'Enable vibration for interactions',
-                  value: _hapticFeedbackEnabled,
-                  onChanged: (value) {
-                    setState(() {
-                      _hapticFeedbackEnabled = value;
-                    });
-                  },
-                ),
               ],
             ),
           ),
@@ -83,9 +54,6 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       title: Text('Dark Mode', style: theme.textTheme.titleLarge),
-      subtitle: Text('Switch between light and dark themes',
-          style: theme.textTheme.bodyMedium
-              ?.copyWith(color: theme.textTheme.bodySmall?.color)),
       trailing: Switch(
         value: themeProvider.themeMode == ThemeMode.dark,
         onChanged: (value) {
@@ -107,17 +75,11 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           'Font Size',
           style: theme.textTheme.titleLarge,
         ),
-        const SizedBox(height: 8),
-        Text(
-          'Adjust text size for better readability',
-          style: theme.textTheme.bodyMedium
-              ?.copyWith(color: theme.textTheme.bodySmall?.color),
-        ),
         const SizedBox(height: 16),
         Container(
           decoration: BoxDecoration(
             color: theme.cardColor,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [
@@ -143,10 +105,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           });
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: isSelected ? theme.colorScheme.primary : Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
             text,
@@ -155,35 +117,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               color: isSelected
                   ? theme.colorScheme.onPrimary
                   : theme.colorScheme.onSurface,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildToggleOption(
-    BuildContext context, {
-    required String title,
-    required String subtitle,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
-    final theme = Theme.of(context);
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(title, style: theme.textTheme.titleLarge),
-      subtitle: Text(subtitle,
-          style: theme.textTheme.bodyMedium
-              ?.copyWith(color: theme.textTheme.bodySmall?.color)),
-      trailing: Switch(
-        value: value,
-        onChanged: onChanged,
-        activeThumbColor: theme.colorScheme.onSurface,
-        activeTrackColor: theme.colorScheme.secondaryContainer,
-        inactiveThumbColor: theme.colorScheme.onSurface,
-        inactiveTrackColor: theme.colorScheme.secondaryContainer,
       ),
     );
   }

@@ -2,7 +2,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flip_card/flip_card.dart';
-import 'package:sumquiz/services/firestore_service.dart';
+import '../../services/firestore_service.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
@@ -13,6 +13,7 @@ import '../../services/enhanced_ai_service.dart';
 import '../../services/usage_service.dart';
 import '../../models/user_model.dart';
 import '../../models/flashcard.dart';
+import '../../utils/app_colors.dart';
 import '../../models/flashcard_set.dart';
 import '../../models/summary_model.dart';
 import '../widgets/upgrade_dialog.dart';
@@ -130,7 +131,7 @@ class _FlashcardsScreenState extends State<FlashcardsScreen> {
             const SnackBar(
               content: Text(
                   'Could not generate flashcards from the provided content. Please try again with different text.'),
-              backgroundColor: Colors.orange,
+              backgroundColor: AppColors.accent,
             ),
           );
           developer.log('AI service returned an empty list of flashcards.',
@@ -198,7 +199,7 @@ class _FlashcardsScreenState extends State<FlashcardsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Flashcard set saved and scheduled for review!'),
-            backgroundColor: Colors.green,
+            backgroundColor: AppColors.secondary,
           ),
         );
       }
@@ -468,14 +469,15 @@ class _FlashcardsScreenState extends State<FlashcardsScreen> {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor:
-            knewIt ? Colors.green.withAlpha(51) : Colors.red.withAlpha(51),
-        foregroundColor: knewIt ? Colors.greenAccent : Colors.redAccent,
+        backgroundColor: knewIt
+            ? AppColors.secondary.withAlpha(51)
+            : AppColors.error.withAlpha(51),
+        foregroundColor: knewIt ? AppColors.secondary : AppColors.error,
         elevation: 0,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
             side: BorderSide(
-                color: knewIt ? Colors.greenAccent : Colors.redAccent,
+                color: knewIt ? AppColors.secondary : AppColors.error,
                 width: 1.5)),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       ),
@@ -495,7 +497,7 @@ class _FlashcardsScreenState extends State<FlashcardsScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(Icons.check_circle_outline,
-                    color: Colors.greenAccent, size: 100),
+                    color: AppColors.secondary, size: 100),
                 const SizedBox(height: 24),
                 Text("You've completed the set!",
                     style: theme.textTheme.titleLarge),

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:sumquiz/services/enhanced_ai_service.dart';
-import 'package:sumquiz/services/local_database_service.dart';
+import '../../services/enhanced_ai_service.dart';
+import '../../services/local_database_service.dart';
 import 'package:sumquiz/services/usage_service.dart';
 import 'package:sumquiz/models/user_model.dart';
-import 'package:sumquiz/views/widgets/upgrade_dialog.dart';
+import 'package:sumquiz/widgets/upgrade_dialog.dart';
 
 // Import the exception class
-// part 'package:sumquiz/services/enhanced_ai_service.dart' show EnhancedAIServiceException;
+// part 'package:myapp/services/enhanced_ai_service.dart' show EnhancedAIServiceException;
 
 class ExtractionViewScreen extends StatefulWidget {
   final String? initialText;

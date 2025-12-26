@@ -116,10 +116,9 @@ class IAPService {
     try {
       // Determine subscription details
       DateTime? expiryDate;
-      bool isLifetime = false;
 
       if (purchaseDetails.productID == _proLifetimeId) {
-        isLifetime = true;
+        // Lifetime purchase
       } else {
         // For recurring subscriptions, set expiry to 1 month or 1 year from now
         final now = DateTime.now();
@@ -308,17 +307,26 @@ class IAPService {
   Stream<Map<String, dynamic>> usageStream(String uid) {
     return _firestore.collection('users').doc(uid).snapshots().map((snapshot) {
       if (!snapshot.exists) return {};
-      final data = snapshot.data() as Map<String, dynamic>;
+      final data = snapshot.data();
+      if (data == null) return {};
 
-      return {
-        'weeklyUploads': data['weeklyUploads'] ?? 0,
-        'folderCount': data['folderCount'] ?? 0,
-        'srsCardCount': data['srsCardCount'] ?? 0,
+      // Convert Map<dynamic, dynamic> to Map<String, dynamic>
+      Map<String, dynamic> stringData = {};
+      if (data is Map) {
+        data.forEach((key, value) {
+          stringData[key.toString()] = value;
+        });
+      }
+
+      return <String, dynamic>{
+        'weeklyUploads': stringData['weeklyUploads'] ?? 0,
+        'folderCount': stringData['folderCount'] ?? 0,
+        'srsCardCount': stringData['srsCardCount'] ?? 0,
       };
     }).handleError((error) {
       developer.log('Error in usageStream: $error',
           name: 'IAPService', error: error);
-      return {};
+      return <String, dynamic>{};
     });
   }
 
@@ -330,6 +338,11 @@ class IAPService {
   /// Dispose resources
   void dispose() {
     _subscription.cancel();
+    developer.log('IAPService disposed', name: 'IAPService');
+  }
+}
+  }
+}
     developer.log('IAPService disposed', name: 'IAPService');
   }
 }
