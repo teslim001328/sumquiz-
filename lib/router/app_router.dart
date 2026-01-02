@@ -5,6 +5,8 @@ import 'package:sumquiz/models/editable_content.dart';
 import 'package:sumquiz/models/flashcard_set.dart';
 import 'package:sumquiz/models/local_quiz.dart';
 import 'package:sumquiz/models/local_summary.dart';
+import 'package:sumquiz/models/quiz_model.dart';
+import 'package:sumquiz/models/summary_model.dart';
 import 'package:sumquiz/services/auth_service.dart';
 import 'package:sumquiz/views/screens/auth_screen.dart';
 import 'package:sumquiz/views/screens/library_screen.dart';
@@ -14,7 +16,7 @@ import 'package:sumquiz/views/screens/review_screen.dart';
 import 'package:sumquiz/views/screens/summary_screen.dart';
 import 'package:sumquiz/views/screens/quiz_screen.dart';
 import 'package:sumquiz/views/screens/flashcards_screen.dart';
-import 'package:sumquiz/views/screens/edit_content_screen.dart';
+import 'package:sumquiz/views/screens/edit_screen.dart';
 import 'package:sumquiz/views/screens/edit_quiz_screen.dart';
 import 'package:sumquiz/views/screens/edit_flashcards_screen.dart';
 import 'package:sumquiz/views/screens/preferences_screen.dart';
@@ -29,6 +31,13 @@ import 'package:sumquiz/views/screens/create_content_screen.dart';
 import 'package:sumquiz/views/screens/extraction_view_screen.dart';
 import 'package:sumquiz/views/screens/results_view_screen.dart';
 import 'package:sumquiz/views/widgets/scaffold_with_nav_bar.dart';
+import 'package:sumquiz/views/widgets/responsive_view.dart';
+import 'package:sumquiz/views/screens/web/library_screen_web.dart';
+import 'package:sumquiz/views/screens/web/create_content_screen_web.dart';
+import 'package:sumquiz/views/screens/web/progress_screen_web.dart';
+import 'package:sumquiz/views/screens/web/extraction_view_screen_web.dart';
+import 'package:sumquiz/views/screens/web/results_view_screen_web.dart';
+import 'package:sumquiz/views/screens/web/landing_page_web.dart';
 
 // GoRouterRefreshStream class
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -68,25 +77,38 @@ GoRouter createAppRouter(AuthService authService) {
       final isAuthRoute = state.matchedLocation == '/auth';
       final isSplash = state.matchedLocation == '/splash';
       final isOnboarding = state.matchedLocation == '/onboarding';
+      final isLanding = state.matchedLocation == '/landing';
 
       if (isSplash || isOnboarding) {
         return null; // Allow splash and onboarding
       }
 
-      if (user == null) {
-        return isAuthRoute
-            ? null
-            : '/auth'; // If not logged in, redirect to auth
+      // Web logic: Redirect unauthenticated root access to Landing Page
+      if (user == null && state.matchedLocation == '/') {
+        return '/landing';
       }
 
-      if (isAuthRoute) {
-        return '/'; // If logged in and on auth, redirect to home (library)
+      if (user == null) {
+        if (!isAuthRoute && !isLanding) {
+          // Redirect to Landing instead of Auth for unauthenticated users accessing protected routes
+          return '/landing';
+        }
+        return null; // Allow access to auth or landing
+      }
+
+      if (isAuthRoute || isLanding) {
+        // Redirect authenticated users away from public pages to home
+        return '/';
       }
 
       return null;
     },
     routes: <RouteBase>[
       // Top-level routes that should not have the nav bar
+      GoRoute(
+        path: '/landing',
+        builder: (context, state) => const LandingPageWeb(),
+      ),
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),
@@ -154,7 +176,10 @@ GoRouter createAppRouter(AuthService authService) {
             routes: <RouteBase>[
               GoRoute(
                 path: '/library',
-                builder: (context, state) => const LibraryScreen(),
+                builder: (context, state) => const ResponsiveView(
+                  mobile: LibraryScreen(),
+                  desktop: LibraryScreenWeb(),
+                ),
                 routes: [
                   // Sub-routes accessible from the Library tab
                   GoRoute(
@@ -187,8 +212,12 @@ GoRouter createAppRouter(AuthService authService) {
                   GoRoute(
                     path: 'results-view/:folderId',
                     parentNavigatorKey: _rootNavigatorKey,
-                    builder: (context, state) => ResultsViewScreen(
-                        folderId: state.pathParameters['folderId']!),
+                    builder: (context, state) => ResponsiveView(
+                      mobile: ResultsViewScreen(
+                          folderId: state.pathParameters['folderId']!),
+                      desktop: ResultsViewScreenWeb(
+                          folderId: state.pathParameters['folderId']!),
+                    ),
                   ),
                 ],
               ),
@@ -201,13 +230,20 @@ GoRouter createAppRouter(AuthService authService) {
             routes: <RouteBase>[
               GoRoute(
                   path: '/create',
-                  builder: (context, state) => const CreateContentScreen(),
+                  builder: (context, state) => const ResponsiveView(
+                        mobile: CreateContentScreen(),
+                        desktop: CreateContentScreenWeb(),
+                      ),
                   routes: [
                     GoRoute(
                       path: 'extraction-view',
                       parentNavigatorKey: _rootNavigatorKey,
-                      builder: (context, state) => ExtractionViewScreen(
-                          initialText: state.extra as String?),
+                      builder: (context, state) => ResponsiveView(
+                        mobile: ExtractionViewScreen(
+                            initialText: state.extra as String?),
+                        desktop: ExtractionViewScreenWeb(
+                            initialText: state.extra as String?),
+                      ),
                     ),
                     GoRoute(
                       path: 'edit-content',
@@ -220,10 +256,23 @@ GoRouter createAppRouter(AuthService authService) {
                           } else if (content.type == 'flashcards' ||
                               content.type == 'flashcardSet' ||
                               content.type == 'flashcard') {
-                            // Check likely values
                             return EditFlashcardsScreen(content: content);
+                          } else if (content.type == 'summary') {
+                            final summary = Summary(
+                              id: content.id,
+                              userId: '',
+                              title: content.title,
+                              content: content.content ?? '',
+                              timestamp: content.timestamp,
+                              tags: content.tags ?? [],
+                            );
+                            return EditScreen(item: summary);
+                          } else {
+                            return const Scaffold(
+                                body: Center(
+                                    child: Text(
+                                        'Unknown Content Type for Editing')));
                           }
-                          return EditContentScreen(content: content);
                         } else {
                           // Should return a valid widget, like an error screen
                           return const Scaffold(
@@ -241,7 +290,10 @@ GoRouter createAppRouter(AuthService authService) {
             routes: <RouteBase>[
               GoRoute(
                   path: '/progress',
-                  builder: (context, state) => const ProgressScreen(),
+                  builder: (context, state) => const ResponsiveView(
+                        mobile: ProgressScreen(),
+                        desktop: ProgressScreenWeb(),
+                      ),
                   routes: []),
             ],
           ),
