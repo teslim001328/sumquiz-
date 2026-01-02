@@ -319,8 +319,9 @@ $sanitizedText''';
                       correctAnswer: q['correctAnswer'] ?? '',
                     ))
                 .toList();
-            if (questions.isEmpty)
+            if (questions.isEmpty) {
               throw Exception('The AI failed to generate quiz questions.');
+            }
             final quiz = LocalQuiz(
               id: const Uuid().v4(),
               userId: userId,
@@ -339,8 +340,9 @@ $sanitizedText''';
                       answer: f['answer'] ?? '',
                     ))
                 .toList();
-            if (flashcards.isEmpty)
+            if (flashcards.isEmpty) {
               throw Exception('The AI failed to generate flashcards.');
+            }
             final flashcardSet = LocalFlashcardSet(
               id: const Uuid().v4(),
               userId: userId,
