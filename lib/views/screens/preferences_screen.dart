@@ -5,21 +5,17 @@ import 'package:sumquiz/providers/theme_provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class PreferencesScreen extends StatefulWidget {
+class PreferencesScreen extends StatelessWidget {
   const PreferencesScreen({super.key});
-
-  @override
-  State<PreferencesScreen> createState() => _PreferencesScreenState();
-}
-
-class _PreferencesScreenState extends State<PreferencesScreen> {
-  int _fontSizeIndex = 1;
-  bool _notificationsEnabled = true;
-  bool _hapticFeedbackEnabled = true;
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+
+    // Calculate current font size index for UI selection
+    int fontSizeIndex = 1;
+    if (themeProvider.fontScale == 0.8) fontSizeIndex = 0;
+    if (themeProvider.fontScale == 1.2) fontSizeIndex = 2;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -27,12 +23,15 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         title: Text(
           'Preferences',
           style: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold, color: Colors.white),
+              fontWeight: FontWeight.bold, color: const Color(0xFF1A237E)),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF1A237E)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Stack(
         children: [
@@ -41,7 +40,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             onPlay: (controller) => controller.repeat(reverse: true),
             effects: [
               CustomEffect(
-                duration: 10.seconds,
+                duration: 6.seconds,
                 builder: (context, value, child) {
                   return Container(
                     decoration: BoxDecoration(
@@ -49,9 +48,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          const Color(0xFF0F2027), // Dark slate
-                          Color.lerp(const Color(0xFF203A43),
-                              const Color(0xFF2C5364), value)!, // Tealish dark
+                          const Color(0xFFF3F4F6),
+                          Color.lerp(const Color(0xFFE8EAF6),
+                              const Color(0xFFC5CAE9), value)!,
                         ],
                       ),
                     ),
@@ -81,7 +80,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 16),
-                          child: _buildFontSizeSelector(themeProvider),
+                          child: _buildFontSizeSelector(
+                              themeProvider, fontSizeIndex),
                         ),
                       ],
                     ).animate().fadeIn(delay: 100.ms).slideY(begin: 0.1),
@@ -96,24 +96,20 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                         _buildToggleOption(
                           context,
                           title: 'Notifications',
-                          value: _notificationsEnabled,
+                          value: themeProvider.notificationsEnabled,
                           icon: Icons.notifications_none,
                           onChanged: (value) {
-                            setState(() {
-                              _notificationsEnabled = value;
-                            });
+                            themeProvider.toggleNotifications(value);
                           },
                         ),
                         _buildDivider(),
                         _buildToggleOption(
                           context,
                           title: 'Haptic Feedback',
-                          value: _hapticFeedbackEnabled,
+                          value: themeProvider.hapticFeedbackEnabled,
                           icon: Icons.vibration,
                           onChanged: (value) {
-                            setState(() {
-                              _hapticFeedbackEnabled = value;
-                            });
+                            themeProvider.toggleHapticFeedback(value);
                           },
                         ),
                       ],
@@ -136,7 +132,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         style: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.bold,
-          color: Colors.white70,
+          color: const Color(0xFF1A237E),
           letterSpacing: 1.2,
         ),
       ),
@@ -150,13 +146,13 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
+            color: Colors.white.withValues(alpha: 0.7),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-                color: Colors.white.withValues(alpha: 0.2), width: 1.5),
+                color: Colors.white.withValues(alpha: 0.6), width: 1.5),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -177,7 +173,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       thickness: 1,
       indent: 16,
       endIndent: 16,
-      color: Colors.white.withValues(alpha: 0.1),
+      color: Colors.grey.withValues(alpha: 0.2),
     );
   }
 
@@ -185,25 +181,28 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     return SwitchListTile(
       title: Text('Dark Mode',
           style: GoogleFonts.inter(
-              fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white)),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87)),
       secondary: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.purpleAccent.withValues(alpha: 0.2),
+          color: const Color(0xFF1A237E).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
         ),
         child: const Icon(Icons.dark_mode_outlined,
-            color: Colors.purpleAccent, size: 20),
+            color: Color(0xFF1A237E), size: 20),
       ),
       value: themeProvider.themeMode == ThemeMode.dark,
       onChanged: (value) => themeProvider.toggleTheme(),
-      activeTrackColor: Colors.purpleAccent,
+      activeTrackColor: const Color(0xFF1A237E),
       hoverColor: Colors.white.withValues(alpha: 0.05),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
     );
   }
 
-  Widget _buildFontSizeSelector(ThemeProvider themeProvider) {
+  Widget _buildFontSizeSelector(
+      ThemeProvider themeProvider, int currentSizeIndex) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -212,7 +211,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.blueAccent.withValues(alpha: 0.2),
+                color: Colors.blueAccent.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Icon(Icons.format_size,
@@ -223,21 +222,24 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                 style: GoogleFonts.inter(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Colors.white)),
+                    color: Colors.black87)),
           ],
         ),
         const SizedBox(height: 16),
         Container(
           height: 44,
           decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.2),
+            color: Colors.grey.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [
-              _buildFontSizeOption(themeProvider, 0, 'Small', 0.8),
-              _buildFontSizeOption(themeProvider, 1, 'Medium', 1.0),
-              _buildFontSizeOption(themeProvider, 2, 'Large', 1.2),
+              _buildFontSizeOption(
+                  themeProvider, 0, 'Small', 0.8, currentSizeIndex),
+              _buildFontSizeOption(
+                  themeProvider, 1, 'Medium', 1.0, currentSizeIndex),
+              _buildFontSizeOption(
+                  themeProvider, 2, 'Large', 1.2, currentSizeIndex),
             ],
           ),
         )
@@ -245,30 +247,33 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     );
   }
 
-  Widget _buildFontSizeOption(
-      ThemeProvider themeProvider, int index, String text, double scale) {
-    final isSelected = _fontSizeIndex == index;
+  Widget _buildFontSizeOption(ThemeProvider themeProvider, int index,
+      String text, double scale, int currentIndex) {
+    final isSelected = currentIndex == index;
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          setState(() {
-            _fontSizeIndex = index;
-            themeProvider.setFontScale(scale);
-          });
+          themeProvider.setFontScale(scale);
         },
         child: AnimatedContainer(
           duration: 200.ms,
           decoration: BoxDecoration(
-            color: isSelected
-                ? Colors.white.withValues(alpha: 0.2)
-                : Colors.transparent,
+            color: isSelected ? Colors.white : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2))
+                  ]
+                : [],
           ),
           alignment: Alignment.center,
           child: Text(
             text,
             style: GoogleFonts.inter(
-              color: isSelected ? Colors.white : Colors.white60,
+              color: isSelected ? const Color(0xFF1A237E) : Colors.grey[600],
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               fontSize: 13,
             ),
@@ -288,11 +293,13 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     return SwitchListTile(
       title: Text(title,
           style: GoogleFonts.inter(
-              fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white)),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87)),
       secondary: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.pinkAccent.withValues(alpha: 0.2),
+          color: Colors.pinkAccent.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(icon, color: Colors.pinkAccent, size: 20),

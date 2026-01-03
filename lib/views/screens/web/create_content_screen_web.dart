@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -128,177 +129,271 @@ class _CreateContentScreenWebState extends State<CreateContentScreenWeb> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FB),
-      body: Row(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: Text('Create Content',
+            style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w600, color: const Color(0xFF1A237E))),
+        centerTitle: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF1A237E)),
+          onPressed: () => context.go('/'),
+        ),
+      ),
+      body: Stack(
         children: [
-          // Left Side - Input Selection
-          Expanded(
-            flex: 4,
-            child: Container(
-              padding: const EdgeInsets.all(40),
-              color: Colors.white,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Create New",
-                      style: GoogleFonts.poppins(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black)),
-                  const SizedBox(height: 8),
-                  Text("Import content to generate summaries and quizzes",
-                      style: GoogleFonts.inter(
-                          fontSize: 16, color: Colors.grey[600])),
-                  const SizedBox(height: 48),
-
-                  // Input Methods Grid
-                  SizedBox(
-                    height: 120,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _inputMethods.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(width: 16),
-                      itemBuilder: (context, index) {
-                        final method = _inputMethods[index];
-                        final isSelected = _selectedInputIndex == index;
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedInputIndex = index;
-                              _selectedFile = null;
-                            });
-                          },
-                          child: AnimatedContainer(
-                            duration: 200.ms,
-                            width: 140,
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                                color: isSelected
-                                    ? const Color(0xFF1A237E)
-                                    : Colors.grey[50],
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                    color: isSelected
-                                        ? Colors.transparent
-                                        : Colors.grey[200]!),
-                                boxShadow: isSelected
-                                    ? [
-                                        BoxShadow(
-                                            color: const Color(0xFF1A237E)
-                                                .withValues(alpha: 0.3),
-                                            blurRadius: 12,
-                                            offset: const Offset(0, 4))
-                                      ]
-                                    : []),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(method['icon'] as IconData,
-                                    color: isSelected
-                                        ? Colors.white
-                                        : Colors.grey[600],
-                                    size: 28),
-                                const SizedBox(height: 8),
-                                Text(method['label'] as String,
-                                    style: GoogleFonts.inter(
-                                        fontWeight: FontWeight.w600,
-                                        color: isSelected
-                                            ? Colors.white
-                                            : Colors.grey[800])),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  // Divider
-                  Divider(color: Colors.grey.shade200),
-                  const SizedBox(height: 40),
-
-                  // Input Area
-                  Expanded(
-                    child: AnimatedSwitcher(
-                      duration: 300.ms,
-                      child: _buildInputArea(),
-                    ),
-                  ),
-
-                  // Action Bar
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _processContent,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1A237E),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        elevation: 0,
+          // Animated Background
+          Animate(
+            onPlay: (controller) => controller.repeat(reverse: true),
+            effects: [
+              CustomEffect(
+                duration: 6.seconds,
+                builder: (context, value, child) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          const Color(0xFFF3F4F6),
+                          Color.lerp(const Color(0xFFE8EAF6),
+                              const Color(0xFFC5CAE9), value)!,
+                        ],
                       ),
-                      child: _isLoading
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                  color: Colors.white, strokeWidth: 2))
-                          : Text("NEXT STEP",
-                              style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1)),
                     ),
-                  ),
-                ],
-              ),
-            ),
+                    child: child,
+                  );
+                },
+              )
+            ],
+            child: Container(),
           ),
 
-          // Right Side - Illustration/Preview
-          Expanded(
-            flex: 3,
-            child: Container(
-              color: const Color(0xFFF5F7FB),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Row(
                 children: [
-                  // Using ProGate for premium feature (e.g., Image/PDF)
-                  if (_selectedInputIndex >= 2)
-                    Padding(
-                      padding: const EdgeInsets.all(32.0),
-                      child: ProGate(
-                        featureName: _inputMethods[_selectedInputIndex]['label']
-                            as String,
-                        proContent: () => _buildSafetyInfo(),
-                        freeContent: Container(
-                            padding: const EdgeInsets.all(24),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16)),
-                            child: Column(
-                              children: [
-                                const Icon(Icons.star_border,
-                                    size: 48, color: Colors.amber),
-                                const SizedBox(height: 16),
-                                Text("Pro Feature",
-                                    style: GoogleFonts.poppins(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold)),
-                                const SizedBox(height: 8),
-                                const Text(
-                                    "Upload unlimited PDFs and Images with Pro.",
-                                    textAlign: TextAlign.center),
-                              ],
-                            )),
+                  // Left Side - Input Selection
+                  Expanded(
+                    flex: 4,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        child: Container(
+                          padding: const EdgeInsets.all(40),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.7),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.6),
+                                width: 1.5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.05),
+                                blurRadius: 20,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Create New",
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF1A237E))),
+                              const SizedBox(height: 8),
+                              Text(
+                                  "Import content to generate summaries and quizzes",
+                                  style: GoogleFonts.inter(
+                                      fontSize: 16, color: Colors.grey[700])),
+                              const SizedBox(height: 48),
+
+                              // Input Methods Grid
+                              SizedBox(
+                                height: 120,
+                                child: ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: _inputMethods.length,
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(width: 16),
+                                  itemBuilder: (context, index) {
+                                    final method = _inputMethods[index];
+                                    final isSelected =
+                                        _selectedInputIndex == index;
+                                    return GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedInputIndex = index;
+                                          _selectedFile = null;
+                                        });
+                                      },
+                                      child: AnimatedContainer(
+                                        duration: 200.ms,
+                                        width: 140,
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                            color: isSelected
+                                                ? const Color(0xFF1A237E)
+                                                : Colors.white
+                                                    .withValues(alpha: 0.5),
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            border: Border.all(
+                                                color: isSelected
+                                                    ? Colors.transparent
+                                                    : Colors.white),
+                                            boxShadow: isSelected
+                                                ? [
+                                                    BoxShadow(
+                                                        color: const Color(
+                                                                0xFF1A237E)
+                                                            .withValues(
+                                                                alpha: 0.3),
+                                                        blurRadius: 12,
+                                                        offset:
+                                                            const Offset(0, 4))
+                                                  ]
+                                                : []),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(method['icon'] as IconData,
+                                                color: isSelected
+                                                    ? Colors.white
+                                                    : const Color(0xFF1A237E),
+                                                size: 28),
+                                            const SizedBox(height: 8),
+                                            Text(method['label'] as String,
+                                                style: GoogleFonts.inter(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: isSelected
+                                                        ? Colors.white
+                                                        : Colors.grey[800])),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+
+                              const SizedBox(height: 40),
+
+                              // Divider
+                              Divider(color: Colors.grey.shade300),
+                              const SizedBox(height: 40),
+
+                              // Input Area
+                              Expanded(
+                                child: AnimatedSwitcher(
+                                  duration: 300.ms,
+                                  child: _buildInputArea(),
+                                ),
+                              ),
+
+                              // Action Bar
+                              const SizedBox(height: 24),
+                              SizedBox(
+                                width: double.infinity,
+                                height: 56,
+                                child: ElevatedButton(
+                                  onPressed:
+                                      _isLoading ? null : _processContent,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF1A237E),
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(16)),
+                                    elevation: 4,
+                                    shadowColor: const Color(0xFF1A237E)
+                                        .withValues(alpha: 0.3),
+                                  ),
+                                  child: _isLoading
+                                      ? const SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2))
+                                      : Text("NEXT STEP",
+                                          style: GoogleFonts.inter(
+                                              fontWeight: FontWeight.bold,
+                                              letterSpacing: 1)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    )
-                  else
-                    _buildSafetyInfo(),
+                    ),
+                  ),
+
+                  const SizedBox(width: 24),
+
+                  // Right Side - Illustration/Preview
+                  Expanded(
+                    flex: 3,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (_selectedInputIndex >= 2)
+                            Padding(
+                              padding: const EdgeInsets.all(32.0),
+                              child: ProGate(
+                                featureName: _inputMethods[_selectedInputIndex]
+                                    ['label'] as String,
+                                proContent: () => _buildSafetyInfo(),
+                                freeContent: ClipRRect(
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: BackdropFilter(
+                                    filter: ImageFilter.blur(
+                                        sigmaX: 10, sigmaY: 10),
+                                    child: Container(
+                                        padding: const EdgeInsets.all(24),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white
+                                              .withValues(alpha: 0.7),
+                                          borderRadius:
+                                              BorderRadius.circular(24),
+                                          border: Border.all(
+                                              color: Colors.white
+                                                  .withValues(alpha: 0.6)),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            const Icon(Icons.star_border,
+                                                size: 48, color: Colors.amber),
+                                            const SizedBox(height: 16),
+                                            Text("Pro Feature",
+                                                style: GoogleFonts.poppins(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            const SizedBox(height: 8),
+                                            const Text(
+                                                "Upload unlimited PDFs and Images with Pro.",
+                                                textAlign: TextAlign.center),
+                                          ],
+                                        )),
+                                  ),
+                                ),
+                              ),
+                            )
+                          else
+                            _buildSafetyInfo(),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -387,32 +482,50 @@ class _CreateContentScreenWebState extends State<CreateContentScreenWeb> {
   }
 
   Widget _buildSafetyInfo() {
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 400),
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05), blurRadius: 20)
-          ]),
-      child: Column(
-        children: [
-          Image.network(
-              "https://cdn-icons-png.flaticon.com/512/2910/2910768.png",
-              height: 120),
-          const SizedBox(height: 24),
-          Text("Smart Generation",
-              style: GoogleFonts.poppins(
-                  fontSize: 22, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          Text(
-            "Our AI automatically analyzes your content to create the best study materials. Please verify the generated content for accuracy.",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(height: 1.5, color: Colors.grey[600]),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 400),
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.7),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.6)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 20,
+              )
+            ],
           ),
-        ],
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A237E).withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.auto_awesome,
+                    size: 48, color: Color(0xFF1A237E)),
+              ),
+              const SizedBox(height: 24),
+              Text("Smart Generation",
+                  style: GoogleFonts.poppins(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1A237E))),
+              const SizedBox(height: 12),
+              Text(
+                "Our AI automatically analyzes your content to create the best study materials. Please verify the generated content for accuracy.",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(height: 1.5, color: Colors.grey[700]),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

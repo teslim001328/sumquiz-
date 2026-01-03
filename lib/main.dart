@@ -125,6 +125,7 @@ class _MyAppState extends State<MyApp> {
           },
           dispose: (_, service) => service?.dispose(),
         ),
+        Provider<EnhancedAIService>(create: (_) => EnhancedAIService()),
         Provider<AIService>(
             create: (context) =>
                 AIService(iapService: context.read<IAPService?>())),
@@ -132,7 +133,6 @@ class _MyAppState extends State<MyApp> {
             create: (context) =>
                 ContentExtractionService(context.read<EnhancedAIService>())),
         Provider<UserService>(create: (_) => UserService()),
-        Provider<EnhancedAIService>(create: (_) => EnhancedAIService()),
         Provider<SyncService>(
           create: (context) =>
               SyncService(context.read<LocalDatabaseService>()),

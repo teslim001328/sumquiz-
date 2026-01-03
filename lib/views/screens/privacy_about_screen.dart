@@ -59,13 +59,13 @@ class _PrivacyAboutScreenState extends State<PrivacyAboutScreen> {
         title: Text(
           'About & Privacy',
           style: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold, color: Colors.white),
+              fontWeight: FontWeight.bold, color: const Color(0xFF1A237E)),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF1A237E)),
           onPressed: () => context.pop(),
         ),
       ),
@@ -76,7 +76,7 @@ class _PrivacyAboutScreenState extends State<PrivacyAboutScreen> {
             onPlay: (controller) => controller.repeat(reverse: true),
             effects: [
               CustomEffect(
-                duration: 10.seconds,
+                duration: 6.seconds,
                 builder: (context, value, child) {
                   return Container(
                     decoration: BoxDecoration(
@@ -84,9 +84,9 @@ class _PrivacyAboutScreenState extends State<PrivacyAboutScreen> {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          const Color(0xFF0F2027), // Dark slate
-                          Color.lerp(const Color(0xFF203A43),
-                              const Color(0xFF2C5364), value)!, // Tealish dark
+                          const Color(0xFFF3F4F6),
+                          Color.lerp(const Color(0xFFE8EAF6),
+                              const Color(0xFFC5CAE9), value)!,
                         ],
                       ),
                     ),
@@ -120,8 +120,7 @@ class _PrivacyAboutScreenState extends State<PrivacyAboutScreen> {
                         '© 2024 SumQuiz. All rights reserved.',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.inter(
-                            color: Colors.white.withValues(alpha: 0.3),
-                            fontSize: 12),
+                            color: Colors.grey[600], fontSize: 12),
                       ).animate().fadeIn(delay: 400.ms),
                     ],
                   ),
@@ -140,20 +139,21 @@ class _PrivacyAboutScreenState extends State<PrivacyAboutScreen> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
+            color: const Color(0xFF1A237E).withValues(alpha: 0.05),
             shape: BoxShape.circle,
             border: Border.all(
-                color: Colors.white.withValues(alpha: 0.2), width: 2),
+                color: const Color(0xFF1A237E).withValues(alpha: 0.1),
+                width: 2),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.2),
+                color: const Color(0xFF1A237E).withValues(alpha: 0.1),
                 blurRadius: 20,
                 spreadRadius: 5,
               ),
             ],
           ),
           child: const Icon(Icons.info_outline,
-              size: 60, color: Colors.blueAccent),
+              size: 60, color: Color(0xFF1A237E)),
         ),
         const SizedBox(height: 24),
         Text(
@@ -161,7 +161,7 @@ class _PrivacyAboutScreenState extends State<PrivacyAboutScreen> {
           style: GoogleFonts.poppins(
             fontSize: 32,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: const Color(0xFF1A237E),
             letterSpacing: 1.5,
           ),
         ),
@@ -169,15 +169,16 @@ class _PrivacyAboutScreenState extends State<PrivacyAboutScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.blueAccent.withValues(alpha: 0.2),
+            color: const Color(0xFF1A237E).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.3)),
+            border: Border.all(
+                color: const Color(0xFF1A237E).withValues(alpha: 0.2)),
           ),
           child: Text(
             _version,
             style: GoogleFonts.inter(
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
+              color: const Color(0xFF1A237E),
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -192,9 +193,16 @@ class _PrivacyAboutScreenState extends State<PrivacyAboutScreen> {
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.05),
+            color: Colors.white.withValues(alpha: 0.7),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.6)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Column(
             children: [
@@ -232,14 +240,14 @@ class _PrivacyAboutScreenState extends State<PrivacyAboutScreen> {
       color: Colors.transparent,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-        leading: Icon(icon, color: Colors.blueAccent.shade100),
+        leading: Icon(icon, color: const Color(0xFF1A237E)),
         title: Text(title,
             style: GoogleFonts.inter(
-                color: Colors.white,
+                color: Colors.black87,
                 fontSize: 16,
                 fontWeight: FontWeight.w500)),
         trailing: Icon(Icons.arrow_forward_ios,
-            size: 16, color: Colors.white.withValues(alpha: 0.3)),
+            size: 16, color: Colors.grey.withValues(alpha: 0.4)),
         onTap: onTap,
       ),
     );
@@ -247,6 +255,6 @@ class _PrivacyAboutScreenState extends State<PrivacyAboutScreen> {
 
   Widget _buildDivider() => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Divider(height: 1, color: Colors.white.withValues(alpha: 0.1)),
+        child: Divider(height: 1, color: Colors.grey.withValues(alpha: 0.1)),
       );
 }

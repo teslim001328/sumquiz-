@@ -265,14 +265,14 @@ class SubscriptionScreen extends StatelessWidget {
   Widget _buildGlassContainer(
       {required Widget child, EdgeInsetsGeometry? padding}) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           padding: padding ?? const EdgeInsets.all(0),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.6),
-            borderRadius: BorderRadius.circular(24),
+            color: Colors.white.withValues(alpha: 0.7),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(
                 color: Colors.white.withValues(alpha: 0.6), width: 1.5),
             boxShadow: [

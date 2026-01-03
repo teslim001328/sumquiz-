@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sumquiz/models/editable_content.dart';
@@ -35,9 +36,10 @@ import 'package:sumquiz/views/widgets/responsive_view.dart';
 import 'package:sumquiz/views/screens/web/library_screen_web.dart';
 import 'package:sumquiz/views/screens/web/create_content_screen_web.dart';
 import 'package:sumquiz/views/screens/web/progress_screen_web.dart';
-import 'package:sumquiz/views/screens/web/extraction_view_screen_web.dart';
 import 'package:sumquiz/views/screens/web/results_view_screen_web.dart';
 import 'package:sumquiz/views/screens/web/landing_page_web.dart';
+import 'package:sumquiz/views/screens/web/review_screen_web.dart';
+import 'package:sumquiz/views/screens/web/extraction_view_screen_web.dart';
 
 // GoRouterRefreshStream class
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -79,25 +81,29 @@ GoRouter createAppRouter(AuthService authService) {
       final isOnboarding = state.matchedLocation == '/onboarding';
       final isLanding = state.matchedLocation == '/landing';
 
+      // Web Logic: Bypass Splash and Onboarding completely
+      if (kIsWeb) {
+        if (state.matchedLocation == '/splash' ||
+            state.matchedLocation == '/onboarding') {
+          return '/landing';
+        }
+      }
+
       if (isSplash || isOnboarding) {
-        return null; // Allow splash and onboarding
+        return null; // Allow splash and onboarding (Mobile only)
       }
 
-      // Web logic: Redirect unauthenticated root access to Landing Page
-      if (user == null && state.matchedLocation == '/') {
-        return '/landing';
-      }
-
+      // Redirect unauthenticated users
       if (user == null) {
-        if (!isAuthRoute && !isLanding) {
-          // Redirect to Landing instead of Auth for unauthenticated users accessing protected routes
+        // If trying to access root or protected routes, go to Landing
+        if (state.matchedLocation == '/' || (!isAuthRoute && !isLanding)) {
           return '/landing';
         }
         return null; // Allow access to auth or landing
       }
 
-      if (isAuthRoute || isLanding) {
-        // Redirect authenticated users away from public pages to home
+      // Redirect authenticated users
+      if (isAuthRoute || isLanding || isSplash || isOnboarding) {
         return '/';
       }
 
@@ -163,8 +169,12 @@ GoRouter createAppRouter(AuthService authService) {
             navigatorKey: _reviewShellNavigatorKey,
             routes: <RouteBase>[
               GoRoute(
+                // Home Route (Responsive)
                 path: '/',
-                builder: (context, state) => const ReviewScreen(),
+                builder: (context, state) => const ResponsiveView(
+                  mobile: ReviewScreen(),
+                  desktop: ReviewScreenWeb(),
+                ),
                 routes: [],
               ),
             ],

@@ -220,87 +220,160 @@ class _AuthScreenState extends State<AuthScreen>
           ),
 
           // Main Content
-          Center(
-            child: SingleChildScrollView(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Logo Area
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.indigo.withOpacity(0.15),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          )
-                        ]),
-                    child: Image.asset(
-                      'assets/images/sumquiz_logo.png',
-                      width: 60,
-                      height: 60,
-                    ),
-                  )
-                      .animate()
-                      .scale(duration: 500.ms, curve: Curves.easeOutBack),
-
-                  const SizedBox(height: 32),
-
-                  // Glass Card
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Container(
-                        padding: const EdgeInsets.all(32),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(
-                              color: Colors.white.withOpacity(0.6), width: 1.5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 30,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth > 800) {
+                // Desktop / Web Wide Layout
+                return Center(
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 1000),
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: Row(
+                      children: [
+                        // Left Side: Illustration / Branding
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.indigo.withOpacity(0.15),
+                                        blurRadius: 20,
+                                        offset: const Offset(0, 10),
+                                      )
+                                    ]),
+                                child: Image.asset(
+                                  'assets/images/sumquiz_logo.png',
+                                  width: 80,
+                                  height: 80,
+                                ),
+                              ).animate().scale(
+                                  duration: 500.ms, curve: Curves.easeOutBack),
+                              const SizedBox(height: 32),
+                              Text(
+                                'Master Your Knowledge.',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 42,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF1A1A1A),
+                                  height: 1.1,
+                                ),
+                              ).animate().fadeIn().slideX(),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Generate quizzes, flashcards, and summaries instantly with AI.',
+                                style: GoogleFonts.inter(
+                                  fontSize: 18,
+                                  color: Colors.grey[700],
+                                  height: 1.5,
+                                ),
+                              ).animate().fadeIn(delay: 200.ms).slideX(),
+                            ],
+                          ),
                         ),
-                        constraints: const BoxConstraints(maxWidth: 400),
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 500),
-                          switchInCurve: Curves.easeOutQuart,
-                          switchOutCurve: Curves.easeInQuart,
-                          layoutBuilder: (child, list) =>
-                              Stack(children: [child!, ...list]),
-                          transitionBuilder: (child, animation) {
-                            return FadeTransition(
-                                opacity: animation,
-                                child: SizeTransition(
-                                    sizeFactor: animation, child: child));
-                          },
-                          child: _authMode == AuthMode.login
-                              ? _buildLoginForm()
-                              : _buildSignUpForm(),
-                        ),
-                      ),
+                        // Right Side: Auth Form
+                        const SizedBox(width: 80),
+                        Expanded(child: _buildAuthCard()),
+                      ],
                     ),
-                  )
-                      .animate()
-                      .fadeIn(duration: 600.ms, delay: 200.ms)
-                      .slideY(begin: 0.1, end: 0),
-                ],
-              ),
-            ),
+                  ),
+                );
+              } else {
+                // Mobile Layout
+                return Center(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24.0, vertical: 40),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Logo Area
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.indigo.withOpacity(0.15),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 10),
+                                )
+                              ]),
+                          child: Image.asset(
+                            'assets/images/sumquiz_logo.png',
+                            width: 60,
+                            height: 60,
+                          ),
+                        )
+                            .animate()
+                            .scale(duration: 500.ms, curve: Curves.easeOutBack),
+
+                        const SizedBox(height: 32),
+
+                        // Glass Card (Constrained for mobile)
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 400),
+                          child: _buildAuthCard(),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+            },
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildAuthCard() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.8),
+            borderRadius: BorderRadius.circular(24),
+            border:
+                Border.all(color: Colors.white.withOpacity(0.6), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 30,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 500),
+            switchInCurve: Curves.easeOutQuart,
+            switchOutCurve: Curves.easeInQuart,
+            layoutBuilder: (child, list) => Stack(children: [child!, ...list]),
+            transitionBuilder: (child, animation) {
+              return FadeTransition(
+                  opacity: animation,
+                  child: SizeTransition(sizeFactor: animation, child: child));
+            },
+            child: _authMode == AuthMode.login
+                ? _buildLoginForm()
+                : _buildSignUpForm(),
+          ),
+        ),
+      ),
+    )
+        .animate()
+        .fadeIn(duration: 600.ms, delay: 200.ms)
+        .slideY(begin: 0.1, end: 0);
   }
 
   Widget _buildLoginForm() {

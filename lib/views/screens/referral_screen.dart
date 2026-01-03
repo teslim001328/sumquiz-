@@ -40,12 +40,12 @@ class _ReferralScreenState extends State<ReferralScreen> {
       appBar: AppBar(
         title: Text('Refer a Friend',
             style: GoogleFonts.poppins(
-                fontWeight: FontWeight.bold, color: Colors.white)),
+                fontWeight: FontWeight.bold, color: const Color(0xFF1A237E))),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF1A237E)),
           onPressed: () => context.pop(),
         ),
       ),
@@ -56,7 +56,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
             onPlay: (controller) => controller.repeat(reverse: true),
             effects: [
               CustomEffect(
-                duration: 10.seconds,
+                duration: 6.seconds,
                 builder: (context, value, child) {
                   return Container(
                     decoration: BoxDecoration(
@@ -64,9 +64,9 @@ class _ReferralScreenState extends State<ReferralScreen> {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          const Color(0xFF0F2027), // Dark slate
-                          Color.lerp(const Color(0xFF203A43),
-                              const Color(0xFF2C5364), value)!, // Tealish dark
+                          const Color(0xFFF3F4F6),
+                          Color.lerp(const Color(0xFFE8EAF6),
+                              const Color(0xFFC5CAE9), value)!,
                         ],
                       ),
                     ),
@@ -90,7 +90,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
                         child: Column(
                           children: [
                             const Icon(Icons.volunteer_activism,
-                                    size: 80, color: Colors.white)
+                                    size: 80, color: Color(0xFF1A237E))
                                 .animate()
                                 .scale()
                                 .fadeIn(),
@@ -100,7 +100,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
                               style: GoogleFonts.poppins(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: const Color(0xFF1A237E),
                               ),
                               textAlign: TextAlign.center,
                             )
@@ -112,7 +112,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
                               'Give 7 days of Pro, Get 7 days of Pro!',
                               style: GoogleFonts.inter(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.amberAccent,
+                                  color: Colors.amber[800],
                                   fontSize: 16),
                               textAlign: TextAlign.center,
                             ).animate().fadeIn(delay: 200.ms),
@@ -120,7 +120,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
                             Text(
                               'Share your unique code. When friends sign up, they get 7 free Pro days. You earn 7 days for every 2 friends who join!',
                               style: GoogleFonts.inter(
-                                  color: Colors.white70, fontSize: 14),
+                                  color: Colors.grey[700], fontSize: 14),
                               textAlign: TextAlign.center,
                             ).animate().fadeIn(delay: 300.ms),
                           ],
@@ -136,7 +136,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
                         'Your Progress',
                         style: GoogleFonts.poppins(
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: const Color(0xFF1A237E),
                             fontSize: 18),
                       ).animate().fadeIn(delay: 500.ms),
                       const SizedBox(height: 16),
@@ -165,9 +165,16 @@ class _ReferralScreenState extends State<ReferralScreen> {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.05),
+            color: Colors.white.withValues(alpha: 0.7),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.6)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: child,
         ),
@@ -182,7 +189,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
           Text(
             'YOUR UNIQUE CODE',
             style: GoogleFonts.inter(
-                color: Colors.blueAccent.shade100,
+                color: const Color(0xFF1A237E),
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
                 fontSize: 12),
@@ -192,13 +199,14 @@ class _ReferralScreenState extends State<ReferralScreen> {
             future: codeFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator(color: Colors.white);
+                return const CircularProgressIndicator(
+                    color: Color(0xFF1A237E));
               }
               if (snapshot.hasError ||
                   !snapshot.hasData ||
                   snapshot.data!.isEmpty) {
                 return Text('Could not load code',
-                    style: GoogleFonts.inter(color: Colors.white54));
+                    style: GoogleFonts.inter(color: Colors.grey[600]));
               }
               final code = snapshot.data!;
               return InkWell(
@@ -215,10 +223,10 @@ class _ReferralScreenState extends State<ReferralScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   decoration: BoxDecoration(
-                    color: Colors.blueAccent.withValues(alpha: 0.1),
+                    color: const Color(0xFF1A237E).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                        color: Colors.blueAccent.withValues(alpha: 0.3),
+                        color: const Color(0xFF1A237E).withValues(alpha: 0.2),
                         width: 1.5),
                   ),
                   child: Row(
@@ -229,14 +237,14 @@ class _ReferralScreenState extends State<ReferralScreen> {
                         style: GoogleFonts.poppins(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: const Color(0xFF1A237E),
                           letterSpacing: 2.0,
                         ),
                       ),
                       const SizedBox(width: 16),
                       const Icon(
                         Icons.copy_all_rounded,
-                        color: Colors.white,
+                        color: Color(0xFF1A237E),
                         size: 24,
                       ),
                     ],
@@ -257,7 +265,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
                       fontWeight: FontWeight.bold,
                       color: Colors.white)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.pinkAccent,
+                backgroundColor: const Color(0xFF1A237E),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),
                 elevation: 0,
@@ -302,14 +310,20 @@ class _ReferralScreenState extends State<ReferralScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: Colors.white.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.6)),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2)),
+        ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 28, color: Colors.amberAccent),
+          Icon(icon, size: 28, color: Colors.amber[800]),
           const SizedBox(height: 12),
           StreamBuilder<int>(
             stream: stream,
@@ -320,7 +334,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
                 style: GoogleFonts.poppins(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: const Color(0xFF1A237E),
                 ),
               );
             },
@@ -329,7 +343,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: Colors.white70, fontSize: 12),
+            style: GoogleFonts.inter(color: Colors.black87, fontSize: 12),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
@@ -345,7 +359,9 @@ class _ReferralScreenState extends State<ReferralScreen> {
         Text(
           'How It Works',
           style: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF1A237E),
+              fontSize: 18),
         ),
         const SizedBox(height: 16),
         _buildGlassContainer(
@@ -354,10 +370,10 @@ class _ReferralScreenState extends State<ReferralScreen> {
             children: [
               _buildStep(Icons.looks_one_rounded, 'Share Your Code',
                   'Send your unique code to friends via text, email, or social media.'),
-              Divider(color: Colors.white.withValues(alpha: 0.1)),
+              Divider(color: Colors.grey.withValues(alpha: 0.1)),
               _buildStep(Icons.looks_two_rounded, 'Friend Signs Up',
                   'Your friend enters your code during signup and instantly receives 7 Pro days.'),
-              Divider(color: Colors.white.withValues(alpha: 0.1)),
+              Divider(color: Colors.grey.withValues(alpha: 0.1)),
               _buildStep(Icons.looks_3_rounded, 'You Get Rewarded',
                   'After 2 friends sign up, you earn a reward: 7 extra days of Pro subscription!'),
             ],
@@ -373,7 +389,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: Colors.blueAccent.shade100, size: 28),
+          Icon(icon, color: const Color(0xFF1A237E), size: 28),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -382,12 +398,12 @@ class _ReferralScreenState extends State<ReferralScreen> {
                 Text(title,
                     style: GoogleFonts.inter(
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Colors.black87,
                         fontSize: 16)),
                 const SizedBox(height: 4),
                 Text(description,
-                    style:
-                        GoogleFonts.inter(color: Colors.white70, fontSize: 14)),
+                    style: GoogleFonts.inter(
+                        color: Colors.grey[700], fontSize: 14)),
               ],
             ),
           ),

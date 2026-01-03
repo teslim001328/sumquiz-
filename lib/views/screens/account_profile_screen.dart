@@ -27,12 +27,12 @@ class AccountProfileScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Account',
             style: GoogleFonts.poppins(
-                fontWeight: FontWeight.bold, color: Colors.white)),
+                fontWeight: FontWeight.bold, color: const Color(0xFF1A237E))),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF1A237E)),
           onPressed: () => context.pop(),
         ),
       ),
@@ -43,7 +43,7 @@ class AccountProfileScreen extends StatelessWidget {
             onPlay: (controller) => controller.repeat(reverse: true),
             effects: [
               CustomEffect(
-                duration: 10.seconds,
+                duration: 6.seconds,
                 builder: (context, value, child) {
                   return Container(
                     decoration: BoxDecoration(
@@ -51,9 +51,9 @@ class AccountProfileScreen extends StatelessWidget {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          const Color(0xFF0F2027), // Dark slate
-                          Color.lerp(const Color(0xFF203A43),
-                              const Color(0xFF2C5364), value)!, // Tealish dark
+                          const Color(0xFFF3F4F6),
+                          Color.lerp(const Color(0xFFE8EAF6),
+                              const Color(0xFFC5CAE9), value)!,
                         ],
                       ),
                     ),
@@ -107,9 +107,16 @@ class AccountProfileScreen extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.05),
+            color: Colors.white.withValues(alpha: 0.7),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.6)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: child,
         ),
@@ -125,7 +132,7 @@ class AccountProfileScreen extends StatelessWidget {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.2),
+                color: const Color(0xFF1A237E).withValues(alpha: 0.2),
                 blurRadius: 15,
                 spreadRadius: 5,
               ),
@@ -133,13 +140,13 @@ class AccountProfileScreen extends StatelessWidget {
           ),
           child: CircleAvatar(
             radius: 50,
-            backgroundColor: Colors.blueAccent.withValues(alpha: 0.2),
+            backgroundColor: const Color(0xFF1A237E).withValues(alpha: 0.1),
             child: Text(
               user.displayName.isNotEmpty
                   ? user.displayName[0].toUpperCase()
                   : '?',
               style: GoogleFonts.poppins(
-                color: Colors.white,
+                color: const Color(0xFF1A237E),
                 fontWeight: FontWeight.bold,
                 fontSize: 40,
               ),
@@ -150,12 +157,14 @@ class AccountProfileScreen extends StatelessWidget {
         Text(
           user.displayName,
           style: GoogleFonts.poppins(
-              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF1A237E)),
         ),
         const SizedBox(height: 4),
         Text(
           user.email,
-          style: GoogleFonts.inter(color: Colors.white70),
+          style: GoogleFonts.inter(color: Colors.grey[700]),
         ),
         if (user.subscriptionExpiry != null)
           Padding(
@@ -171,7 +180,7 @@ class AccountProfileScreen extends StatelessWidget {
               child: Text(
                 'Pro until ${user.subscriptionExpiry!.toLocal().toString().split(' ')[0]}',
                 style: GoogleFonts.inter(
-                    color: Colors.amberAccent,
+                    color: Colors.amber[800],
                     fontWeight: FontWeight.bold,
                     fontSize: 12),
               ),
@@ -204,7 +213,7 @@ class AccountProfileScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child:
-                Divider(height: 1, color: Colors.white.withValues(alpha: 0.1)),
+                Divider(height: 1, color: Colors.grey.withValues(alpha: 0.1)),
           ),
           _buildListTile(
             context,
@@ -219,7 +228,7 @@ class AccountProfileScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child:
-                Divider(height: 1, color: Colors.white.withValues(alpha: 0.1)),
+                Divider(height: 1, color: Colors.grey.withValues(alpha: 0.1)),
           ),
           _buildListTile(
             context,
@@ -240,23 +249,23 @@ class AccountProfileScreen extends StatelessWidget {
     required VoidCallback onTap,
     bool isDestructive = false,
   }) {
-    final color = isDestructive ? Colors.redAccent : Colors.white;
+    final color = isDestructive ? Colors.redAccent : const Color(0xFF1A237E);
+    final textColor = isDestructive ? Colors.redAccent : Colors.black87;
 
     return ListTile(
       onTap: onTap,
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: isDestructive
-              ? Colors.redAccent.withValues(alpha: 0.1)
-              : Colors.blueAccent.withValues(alpha: 0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(icon, color: color, size: 20),
       ),
-      title: Text(title, style: GoogleFonts.inter(color: color, fontSize: 16)),
+      title:
+          Text(title, style: GoogleFonts.inter(color: textColor, fontSize: 16)),
       trailing: Icon(Icons.arrow_forward_ios,
-          size: 14, color: Colors.white.withValues(alpha: 0.3)),
+          size: 14, color: Colors.grey.withValues(alpha: 0.5)),
     );
   }
 
@@ -265,12 +274,12 @@ class AccountProfileScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1E1E1E),
+          backgroundColor: Colors.white,
           title: Text('Delete Account',
-              style: GoogleFonts.poppins(color: Colors.white)),
+              style: GoogleFonts.poppins(color: Colors.black87)),
           content: Text(
               'Are you sure you want to permanently delete your account? This action cannot be undone.',
-              style: GoogleFonts.inter(color: Colors.white70)),
+              style: GoogleFonts.inter(color: Colors.grey[800])),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),
@@ -301,9 +310,16 @@ class AccountProfileScreen extends StatelessWidget {
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Colors.redAccent.withValues(alpha: 0.1),
+            color: Colors.white.withValues(alpha: 0.7),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: TextButton.icon(
             icon: const Icon(Icons.logout, color: Colors.redAccent),

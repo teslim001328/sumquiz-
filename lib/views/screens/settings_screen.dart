@@ -16,12 +16,12 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Settings',
             style: GoogleFonts.poppins(
-                fontWeight: FontWeight.bold, color: Colors.white)),
+                fontWeight: FontWeight.bold, color: const Color(0xFF1A237E))),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF1A237E)),
           onPressed: () => context.pop(),
         ),
       ),
@@ -32,7 +32,7 @@ class SettingsScreen extends StatelessWidget {
             onPlay: (controller) => controller.repeat(reverse: true),
             effects: [
               CustomEffect(
-                duration: 10.seconds,
+                duration: 6.seconds,
                 builder: (context, value, child) {
                   return Container(
                     decoration: BoxDecoration(
@@ -40,9 +40,9 @@ class SettingsScreen extends StatelessWidget {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          const Color(0xFF0F2027), // Dark slate
-                          Color.lerp(const Color(0xFF203A43),
-                              const Color(0xFF2C5364), value)!, // Tealish dark
+                          const Color(0xFFF3F4F6),
+                          Color.lerp(const Color(0xFFE8EAF6),
+                              const Color(0xFFC5CAE9), value)!,
                         ],
                       ),
                     ),
@@ -148,7 +148,7 @@ class SettingsScreen extends StatelessWidget {
         title.toUpperCase(),
         style: GoogleFonts.inter(
           fontWeight: FontWeight.bold,
-          color: Colors.blueAccent.shade100,
+          color: const Color(0xFF1A237E),
           letterSpacing: 1.2,
           fontSize: 12,
         ),
@@ -178,20 +178,28 @@ class SettingsScreen extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
+                  color: Colors.white.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(20),
                   border:
-                      Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                      Border.all(color: Colors.white.withValues(alpha: 0.6)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.1),
+                        color: const Color(0xFF1A237E).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Icon(icon, color: Colors.white, size: 24),
+                      child:
+                          Icon(icon, color: const Color(0xFF1A237E), size: 24),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -201,17 +209,17 @@ class SettingsScreen extends StatelessWidget {
                           Text(title,
                               style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.white,
+                                  color: Colors.black87,
                                   fontSize: 16)),
                           const SizedBox(height: 2),
                           Text(subtitle,
                               style: GoogleFonts.inter(
-                                  color: Colors.white54, fontSize: 13)),
+                                  color: Colors.grey[700], fontSize: 13)),
                         ],
                       ),
                     ),
                     Icon(Icons.arrow_forward_ios,
-                        size: 16, color: Colors.white.withValues(alpha: 0.4)),
+                        size: 16, color: Colors.grey[400]),
                   ],
                 ),
               ),
@@ -230,20 +238,29 @@ class SettingsScreen extends StatelessWidget {
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Colors.redAccent.withValues(alpha: 0.1),
+            color: Colors.white.withValues(alpha: 0.7),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: TextButton.icon(
             onPressed: () async {
               final shouldLogout = await showDialog<bool>(
                 context: context,
                 builder: (context) => AlertDialog(
-                  backgroundColor: const Color(0xFF1E1E1E),
+                  backgroundColor: Colors.white,
+                  surfaceTintColor: Colors.transparent,
                   title: Text('Sign Out',
-                      style: GoogleFonts.poppins(color: Colors.white)),
+                      style: GoogleFonts.poppins(
+                          color: Colors.black87, fontWeight: FontWeight.bold)),
                   content: Text('Are you sure you want to sign out?',
-                      style: GoogleFonts.inter(color: Colors.white70)),
+                      style: GoogleFonts.inter(color: Colors.grey[800])),
                   actions: [
                     TextButton(
                         onPressed: () => Navigator.pop(context, false),

@@ -5,14 +5,20 @@ import 'package:google_fonts/google_fonts.dart';
 class ThemeProvider with ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.light;
   double _fontScale = 1.0;
+  bool _notificationsEnabled = true;
+  bool _hapticFeedbackEnabled = true;
 
   static const String _themeModeKey = 'theme_mode';
   static const String _fontScaleKey = 'font_scale';
+  static const String _notificationsKey = 'notifications_enabled';
+  static const String _hapticFeedbackKey = 'haptic_feedback_enabled';
 
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     final themeString = prefs.getString(_themeModeKey);
     final fontScale = prefs.getDouble(_fontScaleKey);
+    final notifications = prefs.getBool(_notificationsKey);
+    final haptic = prefs.getBool(_hapticFeedbackKey);
 
     if (themeString != null) {
       _themeMode = themeString == 'dark' ? ThemeMode.dark : ThemeMode.light;
@@ -21,6 +27,14 @@ class ThemeProvider with ChangeNotifier {
 
     if (fontScale != null) {
       _fontScale = fontScale;
+    }
+
+    if (notifications != null) {
+      _notificationsEnabled = notifications;
+    }
+
+    if (haptic != null) {
+      _hapticFeedbackEnabled = haptic;
     }
 
     notifyListeners();
@@ -43,6 +57,8 @@ class ThemeProvider with ChangeNotifier {
 
   ThemeMode get themeMode => _themeMode;
   double get fontScale => _fontScale;
+  bool get notificationsEnabled => _notificationsEnabled;
+  bool get hapticFeedbackEnabled => _hapticFeedbackEnabled;
 
   Future<void> toggleTheme() async {
     _themeMode =
@@ -65,6 +81,20 @@ class ThemeProvider with ChangeNotifier {
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble(_fontScaleKey, scale);
+  }
+
+  Future<void> toggleNotifications(bool value) async {
+    _notificationsEnabled = value;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_notificationsKey, value);
+  }
+
+  Future<void> toggleHapticFeedback(bool value) async {
+    _hapticFeedbackEnabled = value;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_hapticFeedbackKey, value);
   }
 
   ThemeData getTheme() {

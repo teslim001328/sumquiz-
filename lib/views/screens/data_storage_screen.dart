@@ -24,13 +24,13 @@ class DataStorageScreen extends StatelessWidget {
         title: Text(
           'Data & Storage',
           style: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold, color: Colors.white),
+              fontWeight: FontWeight.bold, color: const Color(0xFF1A237E)),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF1A237E)),
           onPressed: () => context.pop(),
         ),
       ),
@@ -41,7 +41,7 @@ class DataStorageScreen extends StatelessWidget {
             onPlay: (controller) => controller.repeat(reverse: true),
             effects: [
               CustomEffect(
-                duration: 10.seconds,
+                duration: 6.seconds,
                 builder: (context, value, child) {
                   return Container(
                     decoration: BoxDecoration(
@@ -49,9 +49,9 @@ class DataStorageScreen extends StatelessWidget {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          const Color(0xFF0F2027), // Dark slate
-                          Color.lerp(const Color(0xFF203A43),
-                              const Color(0xFF2C5364), value)!, // Tealish dark
+                          const Color(0xFFF3F4F6),
+                          Color.lerp(const Color(0xFFE8EAF6),
+                              const Color(0xFFC5CAE9), value)!,
                         ],
                       ),
                     ),
@@ -94,7 +94,7 @@ class DataStorageScreen extends StatelessWidget {
                                   const EdgeInsets.symmetric(horizontal: 16),
                               child: Divider(
                                   height: 1,
-                                  color: Colors.white.withValues(alpha: 0.1)),
+                                  color: Colors.grey.withValues(alpha: 0.1)),
                             ),
                             _buildActionTile(
                               context,
@@ -109,7 +109,7 @@ class DataStorageScreen extends StatelessWidget {
                                   const EdgeInsets.symmetric(horizontal: 16),
                               child: Divider(
                                   height: 1,
-                                  color: Colors.white.withValues(alpha: 0.1)),
+                                  color: Colors.grey.withValues(alpha: 0.1)),
                             ),
                             _buildActionTile(
                               context,
@@ -140,9 +140,16 @@ class DataStorageScreen extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.05),
+            color: Colors.white.withValues(alpha: 0.7),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.6)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: child,
         ),
@@ -158,7 +165,7 @@ class DataStorageScreen extends StatelessWidget {
         title.toUpperCase(),
         style: GoogleFonts.inter(
           fontWeight: FontWeight.bold,
-          color: Colors.blueAccent.shade100,
+          color: const Color(0xFF1A237E),
           letterSpacing: 1.2,
           fontSize: 12,
         ),
@@ -173,9 +180,10 @@ class DataStorageScreen extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.blueAccent.withValues(alpha: 0.1),
+            color: const Color(0xFF1A237E).withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.3)),
+            border: Border.all(
+                color: const Color(0xFF1A237E).withValues(alpha: 0.1)),
           ),
           child: Padding(
             padding: const EdgeInsets.all(24.0),
@@ -187,18 +195,18 @@ class DataStorageScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.1),
+                        color: const Color(0xFF1A237E).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Icon(Icons.storage_outlined,
-                          color: Colors.white, size: 24),
+                          color: Color(0xFF1A237E), size: 24),
                     ),
                     const SizedBox(width: 12),
                     Text(
                       'Storage Usage',
                       style: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: const Color(0xFF1A237E),
                           fontSize: 18),
                     ),
                   ],
@@ -208,7 +216,7 @@ class DataStorageScreen extends StatelessWidget {
                   '42.5 MB Used',
                   style: GoogleFonts.inter(
                       fontWeight: FontWeight.w600,
-                      color: Colors.blueAccent.shade100,
+                      color: Colors.black87,
                       fontSize: 16),
                 ),
                 const SizedBox(height: 8),
@@ -217,9 +225,9 @@ class DataStorageScreen extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: 0.42,
                     minHeight: 10,
-                    backgroundColor: Colors.white.withValues(alpha: 0.1),
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                        Colors.blueAccent.shade200),
+                    backgroundColor: Colors.grey.withValues(alpha: 0.1),
+                    valueColor:
+                        const AlwaysStoppedAnimation<Color>(Color(0xFF1A237E)),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -228,10 +236,10 @@ class DataStorageScreen extends StatelessWidget {
                   children: [
                     Text('0 MB',
                         style: GoogleFonts.inter(
-                            color: Colors.white54, fontSize: 12)),
+                            color: Colors.grey[600], fontSize: 12)),
                     Text('100 MB Limit',
                         style: GoogleFonts.inter(
-                            color: Colors.white54, fontSize: 12)),
+                            color: Colors.grey[600], fontSize: 12)),
                   ],
                 )
               ],
@@ -249,13 +257,13 @@ class DataStorageScreen extends StatelessWidget {
       required VoidCallback onTap}) {
     return ListTile(
       onTap: onTap,
-      leading: Icon(icon, color: Colors.white70),
+      leading: Icon(icon, color: const Color(0xFF1A237E)),
       title: Text(title,
-          style: GoogleFonts.inter(color: Colors.white, fontSize: 16)),
+          style: GoogleFonts.inter(color: Colors.black87, fontSize: 16)),
       subtitle: Text(subtitle,
-          style: GoogleFonts.inter(color: Colors.white54, fontSize: 13)),
+          style: GoogleFonts.inter(color: Colors.grey[600], fontSize: 13)),
       trailing: Icon(Icons.arrow_forward_ios,
-          size: 14, color: Colors.white.withValues(alpha: 0.3)),
+          size: 14, color: Colors.grey.withValues(alpha: 0.4)),
     );
   }
 
@@ -265,12 +273,12 @@ class DataStorageScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1E1E1E),
+          backgroundColor: Colors.white,
           title: Text('Clear Cache?',
-              style: GoogleFonts.poppins(color: Colors.white)),
+              style: GoogleFonts.poppins(color: Colors.black87)),
           content: Text(
               'Are you sure you want to clear all cached data? This will free up storage space but may require re-downloading content.',
-              style: GoogleFonts.inter(color: Colors.white70)),
+              style: GoogleFonts.inter(color: Colors.grey[800])),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),
@@ -314,11 +322,11 @@ class DataStorageScreen extends StatelessWidget {
             child: Container(
               height: MediaQuery.of(context).size.height * 0.7,
               decoration: BoxDecoration(
-                color: const Color(0xFF0F2027).withValues(alpha: 0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(24)),
                 border: Border(
-                  top: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+                  top: BorderSide(color: Colors.white.withValues(alpha: 0.6)),
                 ),
               ),
               padding: const EdgeInsets.all(24.0),
@@ -329,7 +337,7 @@ class DataStorageScreen extends StatelessWidget {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Colors.grey.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -339,7 +347,7 @@ class DataStorageScreen extends StatelessWidget {
                     style: GoogleFonts.poppins(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                        color: Colors.black87),
                   ),
                   const SizedBox(height: 24),
                   if (user != null)
@@ -364,12 +372,12 @@ class DataStorageScreen extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.folder_open,
-                                      size: 48, color: Colors.white24),
+                                      size: 48, color: Colors.grey[400]),
                                   const SizedBox(height: 16),
                                   Text(
                                     'No offline files yet.',
                                     style: GoogleFonts.inter(
-                                        color: Colors.white54),
+                                        color: Colors.grey[600]),
                                   ),
                                 ],
                               ),
@@ -432,16 +440,16 @@ class DataStorageScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: Colors.grey.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
       ),
       child: ListTile(
         title: Text(title,
             style: GoogleFonts.inter(
-                color: Colors.white, fontWeight: FontWeight.w500)),
+                color: Colors.black87, fontWeight: FontWeight.w500)),
         subtitle: Text(type,
-            style: GoogleFonts.inter(color: Colors.white54, fontSize: 12)),
+            style: GoogleFonts.inter(color: Colors.grey[600], fontSize: 12)),
         trailing: IconButton(
           icon: const Icon(Icons.delete_outline,
               color: Colors.redAccent, size: 20),
